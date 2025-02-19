@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanity Clicker</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto Mono', monospace;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+        #start-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: radial-gradient(circle at center, #000000, #1a237e);
+            z-index: 1000;
+        }
+        #title {
+            font-size: 3em;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+            animation: glowTitle 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes glowTitle {
+            0%, 100% {text-shadow: 0 0 10px #FFD700;}
+            50% {text-shadow: 0 0 20px #FFD700;}
+        }
+        #start-button {
+            padding: 20px 40px;
+            font-size: 1.5em;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00b7ff;
+            color: #00b7ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #start-button:hover {
+            background: rgba(0, 183, 255, 0.3);
+            box-shadow: 0 0 15px #00b7ff;
+        }
+        #game-container {
+            flex: 1;
+            display: none;
+        }
+        #main-game {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        #background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: -2;
+            transition: background 1s ease;
+        }
+        #click-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 20px #fff;
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+        #click-area.clicked {
+            animation: pulse 0.3s ease-out;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 20px var(--age-glow-color);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                box-shadow: 0 0 30px var(--age-glow-color);
+            }
+        }
+        #score {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em; /* Increased font size */
+            text-shadow: 0 0 10px var(--age-glow-color);
+        }
+        #score span {
+            display: inline-block;
+            animation: bounce 0.3s ease-out;
+        }
+        @keyframes bounce {
+            0%, 100% {transform: translateY(0);}
+            50% {transform: translateY(-5px);}
+        }
+        @keyframes flashGreen {
+            0%, 100% {color: #fff;}
+            50% {color: #00ff00;}
+        }
+        @keyframes flashRed {
+            0%, 100% {color: #fff;}
+            50% {color: #ff0000;}
+        }
+        #upgrade-panel {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 0 10px var(--age-glow-color);
+            transition: background 1s ease;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .upgrade {
+            border: 1px solid var(--age-glow-color);
+            margin-bottom: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            text-shadow: 0 0 5px var(--age-glow-color);
+            position: relative;
+        }
+        .upgrade:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--age-glow-color);
+        }
+        .upgrade.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .upgrade::after {
+            content: attr(data-description);
+            position: absolute;
+            left: -210px; /* Adjusted position */
+            top: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px;
+            width: 200px;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 0 10px var(--age-glow-color);
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        .upgrade:hover::after {
+            display: block;
+        }
+        .orbit {
+            position: absolute;
+            border-radius: 50%;
+            animation-name: orbit;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            transition: background-color 1s ease;
+            z-index: 1;
+        }
+        @keyframes orbit {
+            from {transform: rotate(0deg) translate(var(--orbit-radius)) rotate(0deg);}
+            to {transform: rotate(360deg) translate(var(--orbit-radius)) rotate(-360deg);}
+        }
+        #alert {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            text-align: center;
+            animation: fadeInOut 3s ease-in-out, shake 0.5s ease-in-out;
+            box-shadow: 0 0 15px var(--age-glow-color);
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) translateX(0); }
+            25% { transform: translate(-50%, -50%) translateX(-5px); }
+            50% { transform: translate(-50%, -50%) translateX(5px); }
+            75% { transform: translate(-50%, -50%) translateX(-5px); }
+        }
+        #next-era {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--age-glow-color);
+            color: var(--age-glow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        #next-era:hover {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px var(--age-glow-color);
+        }
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: var(--age-glow-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle 1s linear;
+            pointer-events: none;
+            z-index: 3;
+        }
+        @keyframes particle {
+            0% {transform: scale(1); opacity: 1;}
+            100% {transform: scale(5); opacity: 0;}
+        }
+        #choiceModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border: 2px solid var(--age-glow-color);
+            z-index: 1000;
+        }
+        #choiceModal p, #choiceModal button {
+            color: var(--age-glow-color);
+        }
+        #choiceModal button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid var(--age-glow-color);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #choiceModal button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px var(--age-glow-color);
+        }
+        #medals {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+        .medal {
+            width: 30px;
+            height: 30px;
+            background: var(--medal-color);
+            border: 2px solid #FFD700; /* Gold border for all medals */
+            border-radius: 50%;
+            margin: 5px 0;
+            box-shadow: 0 0 10px var(--medal-color);
+            animation: glow 2s ease-in-out infinite;
+            position: relative;
+        }
+        .medal::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white; /* Fixed color for tooltip text */
+            padding: 5px;
+            width: 200px;
+            display: none;
+            z-index: 10;
+            box-shadow: 0 0 10px var(--medal-color);
+        }
+        .medal:hover::after {
+            display: block;
+        }
+        @keyframes glow {
+            0%, 100% {box-shadow: 0 0 10px var(--medal-color);}
+            50% {box-shadow: 0 0 20px var(--medal-color);}
+        }
+        #mysteriousWindow {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--age-glow-color);
+            padding: 20px;
+            z-index: 1001;
+            animation: fadeInOut 2s ease-in-out;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="start-menu">
+        <h1 id="title">Welcome to Humanity Clicker</h1>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="game-container">
+        <div id="main-game">
+            <div id="background"></div>
+            <div id="click-area"></div>
+            <div id="particles"></div>
+            <div id="medals"></div>
+        </div>
+        <div id="upgrade-panel">
+            <h2 id="era-title">Stone Age</h2>
+            <div id="upgrades"></div>
+        </div>
+        <div id="alert"></div>
+        <button id="next-era">Advance to Next Era</button>
+    </div>
+    <div id="score">Points: <span>0</span></div>
+    <div id="choiceModal">
+        <p id="narrative"></p>
+        <button id="choice1"></button>
+        <button id="choice2"></button>
+    </div>
+    <div id="mysteriousWindow">The gods will remember that.</div>
+
+    <script>
+        let points = 0;
+        let clickValue = 1;
+        let currentEra = 0;
+        let medals = [];
+        const eras = [
+            {name: "Stone Age", color: "#8B4513", glow: "#FFA07A", medalColor: "#8B4513", advanceCost: 1000, dilemma: {
+                narrative: "The winter is harsh, and food is scarce. You've located a herd of wild animals. Do you:",
+                choices: ["Attempt to domesticate them for future stability", "Hunt them all for immediate survival"],
+                correct: 0,
+                medalDescription: "Medal of the Stone Age - For showing foresight by domesticating animals."
+            }, upgrades: [
+                {name: "Stone Tools", cost: 10, effect: () => clickValue += 1, description: "Increases click value by 1.", color: "#654321", size: 20},
+                {name: "Fire Mastery", cost: 50, effect: () => setInterval(() => points += 1, 1000), description: "Gains 1 point per second.", color: "#DAA520", size: 25},
+                {name: "Animal Domestication", cost: 100, effect: () => clickValue = Math.round(clickValue * 1.1), description: "Domesticates animals, improving click efficiency by 10%.", color: "#704214", size: 30},
+            ], passiveEffect: "Buff: +5% click value."},
+            {name: "Bronze Age", color: "#CD7F32", glow: "#FF8C00", medalColor: "#CD7F32", advanceCost: 2000, dilemma: {
+                narrative: "Your tribe has discovered a new metal. Do you:",
+                choices: ["Use it for weapons to conquer neighboring tribes", "Use it for tools to improve farming"],
+                correct: 1,
+                medalDescription: "Medal of the Bronze Age - For choosing peace and prosperity over war."
+            }, upgrades: [
+                {name: "Bronze Swords", cost: 200, effect: () => clickValue += 2, description: "Increases click value by 2.", color: "#CD853F", size: 20},
+                {name: "Irrigation Systems", cost: 400, effect: () => setInterval(() => points += 2, 1000), description: "Gains 2 points per second.", color: "#D2691E", size: 25},
+                {name: "Trade Routes", cost: 800, effect: () => clickValue = Math.round(clickValue * 1.2), description: "Establishes trade routes, increasing click efficiency by 20%.", color: "#B22222", size: 30},
+            ], passiveEffect: "Buff: +10% click value."},
+            {name: "Iron Age", color: "#A9A9A9", glow: "#C0C0C0", medalColor: "#A9A9A9", advanceCost: 4000, dilemma: {
+                narrative: "Your kingdom is threatened by invaders. Do you:",
+                choices: ["Fortify your defenses and prepare for a siege", "Launch a preemptive strike to eliminate the threat"],
+                correct: 0,
+                medalDescription: "Medal of the Iron Age - For prioritizing defense and strategic planning."
+            }, upgrades: [
+                {name: "Iron Swords", cost: 800, effect: () => clickValue += 4, description: "Increases click value by 4.", color: "#808080", size: 20},
+                {name: "Advanced Farming", cost: 1600, effect: () => setInterval(() => points += 4, 1000), description: "Gains 4 points per second.", color: "#A9A9A9", size: 25},
+                {name: "Fortifications", cost: 3200, effect: () => clickValue = Math.round(clickValue * 1.3), description: "Builds fortifications, increasing click efficiency by 30%.", color: "#696969", size: 30},
+            ], passiveEffect: "Buff: +15% click value."},
+            {name: "Classical Age", color: "#FFF8DC", glow: "#FFDAB9", medalColor: "#FFF8DC", advanceCost: 8000, dilemma: {
+                narrative: "Your empire is at its peak. Do you:",
+                choices: ["Focus on cultural advancements and education", "Expand your territory through military conquest"],
+                correct: 0,
+                medalDescription: "Medal of the Classical Age - For valuing knowledge and cultural growth."
+            }, upgrades: [
+                {name: "Philosophy", cost: 3200, effect: () => clickValue += 8, description: "Increases click value by 8.", color: "#FFFACD", size: 20},
+                {name: "Architecture", cost: 6400, effect: () => setInterval(() => points += 8, 1000), description: "Gains 8 points per second.", color: "#EEE8AA", size: 25},
+                {name: "Literature", cost: 12800, effect: () => clickValue = Math.round(clickValue * 1.4), description: "Enhances cultural influence, increasing click efficiency by 40%.", color: "#FFF8DC", size: 30},
+            ], passiveEffect: "Buff: +20% click value."},
+            {name: "Medieval Age", color: "#8A2BE2", glow: "#9370DB", medalColor: "#8A2BE2", advanceCost: 16000, dilemma: {
+                narrative: "Your kingdom faces internal strife. Do you:",
+                choices: ["Implement reforms to address the people's grievances", "Suppress the rebellion with force"],
+                correct: 0,
+                medalDescription: "Medal of the Medieval Age - For addressing the needs of your people."
+            }, upgrades: [
+                {name: "Knighthood", cost: 12800, effect: () => clickValue += 16, description: "Increases click value by 16.", color: "#9370DB", size: 20},
+                {name: "Castles", cost: 25600, effect: () => setInterval(() => points += 16, 1000), description: "Gains 16 points per second.", color: "#8A2BE2", size: 25},
+                {name: "Feudal System", cost: 51200, effect: () => clickValue = Math.round(clickValue * 1.5), description: "Strengthens the feudal system, increasing click efficiency by 50%.", color: "#9932CC", size: 30},
+            ], passiveEffect: "Buff: +25% click value."},
+            {name: "Renaissance Age", color: "#FFD700", glow: "#FFD700", medalColor: "#FFD700", advanceCost: 32000, dilemma: {
+                narrative: "A new era of enlightenment is upon you. Do you:",
+                choices: ["Support the arts and sciences", "Focus on military expansion"],
+                correct: 0,
+                medalDescription: "Medal of the Renaissance Age - For fostering creativity and innovation."
+            }, upgrades: [
+                {name: "Art Patronage", cost: 51200, effect: () => clickValue += 32, description: "Increases click value by 32.", color: "#FFD700", size: 20},
+                {name: "Scientific Discovery", cost: 102400, effect: () => setInterval(() => points += 32, 1000), description: "Gains 32 points per second.", color: "#FFD700", size: 25},
+                {name: "Printing Press", cost: 204800, effect: () => clickValue = Math.round(clickValue * 1.6), description: "Spreads knowledge, increasing click efficiency by 60%.", color: "#FFD700", size: 30},
+            ], passiveEffect: "Buff: +30% click value."},
+            {name: "Industrial Age", color: "#808080", glow: "#A9A9A9", medalColor: "#808080", advanceCost: 64000, dilemma: {
+                narrative: "Industrialization is changing the world. Do you:",
+                choices: ["Invest in factories and infrastructure", "Focus on worker rights and conditions"],
+                correct: 1,
+                medalDescription: "Medal of the Industrial Age - For prioritizing the well-being of workers."
+            }, upgrades: [
+                {name: "Factories", cost: 204800, effect: () => clickValue += 64, description: "Increases click value by 64.", color: "#808080", size: 20},
+                {name: "Railways", cost: 409600, effect: () => setInterval(() => points += 64, 1000), description: "Gains 64 points per second.", color: "#A9A9A9", size: 25},
+                {name: "Labor Laws", cost: 819200, effect: () => clickValue = Math.round(clickValue * 1.7), description: "Improves worker conditions, increasing click efficiency by 70%.", color: "#696969", size: 30},
+            ], passiveEffect: "Buff: +35% click value."},
+            {name: "Modern Age", color: "#008000", glow: "#00FF00", medalColor: "#008000", advanceCost: 128000, dilemma: {
+                narrative: "Technology is advancing rapidly. Do you:",
+                choices: ["Invest in renewable energy sources", "Focus on space exploration"],
+                correct: 0,
+                medalDescription: "Medal of the Modern Age - For promoting sustainable energy solutions."
+            }, upgrades: [
+                {name: "Renewable Energy", cost: 819200, effect: () => clickValue += 128, description: "Increases click value by 128.", color: "#008000", size: 20},
+                {name: "Internet", cost: 1638400, effect: () => setInterval(() => points += 128, 1000), description: "Gains 128 points per second.", color: "#00FF00", size: 25},
+                {name: "Globalization", cost: 3276800, effect: () => clickValue = Math.round(clickValue * 1.8), description: "Connects the world, increasing click efficiency by 80%.", color: "#008000", size: 30},
+            ], passiveEffect: "Buff: +40% click value."},
+            {name: "Information Age", color: "#0000FF", glow: "#0000FF", medalColor: "#0000FF", advanceCost: 256000, dilemma: {
+                narrative: "Information is power. Do you:",
+                choices: ["Promote free and open information", "Control and censor information"],
+                correct: 0,
+                medalDescription: "Medal of the Information Age - For advocating for freedom of information."
+            }, upgrades: [
+                {name: "Social Media", cost: 3276800, effect: () => clickValue += 256, description: "Increases click value by 256.", color: "#0000FF", size: 20},
+                {name: "Big Data", cost: 6553600, effect: () => setInterval(() => points += 256, 1000), description: "Gains 256 points per second.", color: "#0000FF", size: 25},
+                {name: "Cyber Security", cost: 13107200, effect: () => clickValue = Math.round(clickValue * 1.9), description: "Protects information, increasing click efficiency by 90%.", color: "#0000FF", size: 30},
+            ], passiveEffect: "Buff: +45% click value."},
+            {name: "AI Age", color: "#FF0000", glow: "#FF4500", medalColor: "#FF0000", advanceCost: 512000, dilemma: {
+                narrative: "AI has reached a critical point of development. Do you:",
+                choices: ["Implement strict controls on AI to maintain human oversight", "Allow AI autonomy to solve global issues"],
+                correct: 1,
+                medalDescription: "Medal of the AI Age - For embracing the potential of AI for the betterment of society."
+            }, upgrades: [
+                {name: "Neural Network", cost: 13107200, effect: () => clickValue += 512, description: "Increases click value by 512.", color: "#FF4500", size: 20},
+                {name: "Quantum Computing", cost: 26214400, effect: () => setInterval(() => points += 512, 1000), description: "Gains 512 points per second.", color: "#FF6347", size: 25},
+                {name: "Automated Society", cost: 52428800, effect: () => clickValue = Math.round(clickValue * 2.0), description: "Automates society, increasing click efficiency by 100%.", color: "#DC143C", size: 30},
+            ], passiveEffect: "Buff: +50% click value."}
+        ];
+        const mainGame = document.getElementById('main-game');
+        const clickArea = document.getElementById('click-area');
+        const scoreDisplay = document.getElementById('score');
+        const upgradePanel = document.getElementById('upgrades');
+        const eraTitle = document.getElementById('era-title');
+        const alertBox = document.getElementById('alert');
+        const nextEraBtn = document.getElementById('next-era');
+        const particles = document.getElementById('particles');
+        const choiceModal = document.getElementById('choiceModal');
+        const narrative = document.getElementById('narrative');
+        const choice1 = document.getElementById('choice1');
+        const choice2 = document.getElementById('choice2');
+        const medalsContainer = document.getElementById('medals');
+        const mysteriousWindow = document.getElementById('mysteriousWindow');
+        const startButton = document.getElementById('start-button');
+        const gameContainer = document.getElementById('game-container');
+        const startMenu = document.getElementById('start-menu');
+
+        startButton.addEventListener('click', () => {
+            startMenu.style.display = 'none';
+            gameContainer.style.display = 'flex';
+            updateEra();
+        });
+
+        function updateEra() {
+            const era = eras[currentEra];
+            document.getElementById('background').style.background = era.color;
+            clickArea.style.background = `radial-gradient(circle at 75% 25%, ${era.color}, #4ecdc4)`;
+            document.documentElement.style.setProperty('--age-glow-color', era.glow);
+            eraTitle.textContent = era.name;
+            upgradePanel.innerHTML = '';
+            era.upgrades.forEach((upgrade, index) => {
+                const upgradeElement = document.createElement('div');
+                upgradeElement.className = 'upgrade';
+                upgradeElement.textContent = `${upgrade.name} - ${upgrade.cost} Points`;
+                upgradeElement.setAttribute('data-cost', upgrade.cost);
+                upgradeElement.setAttribute('data-description', upgrade.description);
+                upgradeElement.style.setProperty('--orbit-color', upgrade.color);
+                upgradeElement.style.setProperty('--orbit-radius', `${120 + index * 20}px`);
+                upgradeElement.addEventListener('click', () => {
+                    if (points >= upgrade.cost) {
+                        points -= upgrade.cost;
+                        updateScore(false);
+                        upgradeElement.classList.add('active');
+                        upgrade.effect();
+
+                        const orbit = document.createElement('div');
+                        orbit.className = 'orbit';
+                        orbit.style.top = '50%';
+                        orbit.style.left = '50%';
+                        orbit.style.background = `radial-gradient(circle at 75% 25%, ${upgrade.color}, rgba(255,255,255,0.5))`;
+                        orbit.style.boxShadow = `0 0 10px ${upgrade.color}`;
+                        orbit.style.width = `${upgrade.size}px`;
+                        orbit.style.height = `${upgrade.size}px`;
+                        orbit.style.animationDuration = `${8 + index * 2}s`;
+                        orbit.style.setProperty('--orbit-radius', upgradeElement.style.getPropertyValue('--orbit-radius'));
+                        mainGame.appendChild(orbit);
+                    } else {
+                        showAlert('Not enough points!');
+                    }
+                });
+                upgradePanel.appendChild(upgradeElement);
+            });
+
+            // Add passive effect description to the era title
+            eraTitle.setAttribute('data-description', era.passiveEffect);
+        }
+
+        function updateScore(increase) {
+            const scoreSpan = scoreDisplay.querySelector('span');
+            scoreSpan.textContent = points.toFixed(1);
+            scoreSpan.style.animation = 'none';
+            scoreSpan.offsetHeight; /* Trigger reflow to restart animation */
+            if (increase) {
+                scoreSpan.style.animation = 'bounce 0.3s ease-out, flashGreen 0.3s ease-out';
+            } else {
+                scoreSpan.style.animation = 'flashRed 0.3s ease-out';
+            }
+        }
+
+        function showAlert(message) {
+            alertBox.innerText = message;
+            alertBox.style.display = 'block';
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 3000);
+        }
+
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particles.appendChild(particle);
+            setTimeout(() => particles.removeChild(particle), 1000);
+        }
+
+        function explodeOrbits() {
+            const orbits = document.querySelectorAll('.orbit');
+            orbits.forEach(orbit => {
+                orbit.style.animation = 'explode 1s forwards';
+                setTimeout(() => mainGame.removeChild(orbit), 1000);
+            });
+        }
+
+        function showChoice() {
+            const era = eras[currentEra];
+            if (era.dilemma) {
+                narrative.textContent = era.dilemma.narrative;
+                choice1.textContent = era.dilemma.choices[0];
+                choice2.textContent = era.dilemma.choices[1];
+                choiceModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+                choice1.onclick = () => {
+                    handleChoice(0, era.dilemma.correct);
+                };
+                choice2.onclick = () => {
+                    handleChoice(1, era.dilemma.correct);
+                };
+            } else {
+                advanceEra();
+            }
+        }
+
+        function handleChoice(chosen, correct) {
+            choiceModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            if (chosen === correct) {
+                addMedal(currentEra);
+            } else {
+                showMysteriousWindow();
+            }
+            advanceEra();
+        }
+
+        function addMedal(eraIndex) {
+            const medal = document.createElement('div');
+            medal.className = 'medal';
+            medal.style.setProperty('--medal-color', eras[eraIndex].medalColor);
+            medal.setAttribute('data-tooltip', eras[eraIndex].dilemma.medalDescription);
+            medalsContainer.appendChild(medal);
+            medals.push(medal);
+        }
+
+        function showMysteriousWindow() {
+            mysteriousWindow.style.display = 'block';
+            setTimeout(() => {
+                mysteriousWindow.style.display = 'none';
+            }, 2000);
+        }
+
+        function advanceEra() {
+            if (currentEra < eras.length - 1) {
+                explodeOrbits();
+                points = 0;
+                clickValue = Math.pow(2, currentEra + 1); // Double the base click value for each new era
+                updateScore(false);
+                for (let i = 1; i < 99999; i++) {
+                    window.clearInterval(i);
+                }
+
+                currentEra++;
+                updateEra();
+                if (currentEra === eras.length - 1 && medals.length < eras.length - 1) {
+                    showAlert("You need all Medals of History to advance past the final age!");
+                }
+            } else {
+                showAlert('You have reached the final era!');
+            }
+        }
+
+        clickArea.addEventListener('click', (e) => {
+            points += clickValue;
+            updateScore(true);
+            clickArea.classList.add('clicked');
+            setTimeout(() => clickArea.classList.remove('clicked'), 300);
+
+            for (let i = 0; i < 10; i++) {
+                let x = e.clientX + (Math.random() - 0.5) * 50;
+                let y = e.clientY + (Math.random() - 0.5) * 50;
+                createParticle(x, y);
+            }
+        });
+
+        nextEraBtn.addEventListener('click', () => {
+            if (currentEra < eras.length - 1) {
+                if (points >= eras[currentEra].advanceCost) {
+                    showChoice();
+                } else {
+                    showAlert(`Need ${eras[currentEra].advanceCost} points to advance!`);
+                }
+            } else {
+                showAlert('You have reached the final era!');
+            }
+        });
+
+        updateEra();
+    </script>
+</body>
+</html>
