@@ -329,6 +329,25 @@
             box-shadow: 0 0 15px var(--age-glow-color);
         }
 
+        #toggle-layout {
+            position: absolute;
+            bottom: 20px; /* Move down */
+            left: 220px; /* Position next to skip era button */
+            padding: 10px;
+            font-size: 1em;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--age-glow-color);
+            color: var(--age-glow-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        #toggle-layout:hover {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px var(--age-glow-color);
+        }
+
         .particle {
             position: absolute;
             width: 5px;
@@ -444,6 +463,39 @@
             0%, 100% { text-shadow: 0 0 10px var(--age-glow-color); }
             50% { text-shadow: 0 0 20px var(--age-glow-color); }
         }
+
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            #upgrade-panel {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-top: 20px;
+            }
+
+            #next-era, #skip-era, #toggle-layout {
+                position: static;
+                margin: 10px auto;
+                display: block;
+                width: calc(100% - 40px);
+            }
+
+            #score {
+                position: static;
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            #medals {
+                position: static;
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -466,6 +518,7 @@
         <div id="alert"></div>
         <button id="next-era">Advance to Next Era</button>
         <button id="skip-era">Skip Era</button>
+        <button id="toggle-layout">Toggle Layout</button>
     </div>
     <div id="score">Points: <span>0</span></div>
     <div id="choiceModal">
@@ -591,6 +644,7 @@
         const alertBox = document.getElementById('alert');
         const nextEraBtn = document.getElementById('next-era');
         const skipEraBtn = document.getElementById('skip-era');
+        const toggleLayoutBtn = document.getElementById('toggle-layout');
         const particles = document.getElementById('particles');
         const choiceModal = document.getElementById('choiceModal');
         const narrative = document.getElementById('narrative');
@@ -838,6 +892,10 @@
             }
         }
 
+        function toggleLayout() {
+            document.body.classList.toggle('mobile-layout');
+        }
+
         clickArea.addEventListener('click', (e) => {
             points += baseClickValue + upgradeClickValue;
             updateScore(true);
@@ -870,6 +928,8 @@
         skipEraBtn.addEventListener('click', () => {
             skipEra();
         });
+
+        toggleLayoutBtn.addEventListener('click', toggleLayout);
 
         updateEra();
     </script>
