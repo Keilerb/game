@@ -45,14 +45,23 @@
         #title {
             font-size: 3em;
             color: #FFD700;
-            text-shadow: 0 0 10px #FFD700;
-            animation: glowTitle 2s ease-in-out infinite;
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700;
+            animation: glowTitle 2s ease-in-out infinite, flicker 0.1s infinite;
             margin-bottom: 20px;
         }
 
         @keyframes glowTitle {
-            0%, 100% { text-shadow: 0 0 10px #FFD700; }
-            50% { text-shadow: 0 0 20px #FFD700; }
+            0%, 100% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700; }
+            50% { text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700, 0 0 70px #FFD700; }
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
         }
 
         #start-button {
@@ -141,6 +150,17 @@
             box-shadow: 0 0 20px #fff;
             transition: all 0.5s ease;
             z-index: 2;
+            background: radial-gradient(circle at 75% 25%, #8B4513, #4ecdc4);
+            animation: rotateGradient 10s linear infinite;
+        }
+
+        @keyframes rotateGradient {
+            0% {
+                background: radial-gradient(circle at 75% 25%, #8B4513, #4ecdc4);
+            }
+            100% {
+                background: radial-gradient(circle at 25% 75%, #8B4513, #4ecdc4);
+            }
         }
 
         #click-area.clicked {
@@ -189,7 +209,7 @@
 
         #upgrade-panel {
             width: 300px; /* Keep the width the same */
-            height: 300px; /* Reduce the height */
+            height: 400px; /* Increase the height */
             background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             overflow-y: auto;
@@ -438,18 +458,79 @@
             color: var(--age-glow-color);
             text-shadow: 0 0 10px var(--age-glow-color);
             animation: glowEraTitle 2s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         @keyframes glowEraTitle {
             0%, 100% { text-shadow: 0 0 10px var(--age-glow-color); }
             50% { text-shadow: 0 0 20px var(--age-glow-color); }
         }
+
+        .glowing-text {
+            position: absolute;
+            top: -10px; /* Adjust as needed */
+            right: -20px; /* Adjust as needed */
+            font-size: 1.2em;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            animation: fadeOut 1s ease-out forwards, moveUp 1s ease-out forwards;
+            z-index: 10;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes moveUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
+        }
+
+        #welcomeModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border: 2px solid var(--age-glow-color);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        #welcomeModal p, #welcomeModal button {
+            color: var(--age-glow-color);
+        }
+
+        #welcomeModal button {
+            display: block;
+            margin: 10px 0;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border: 1px solid var(--age-glow-color);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #welcomeModal button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px var(--age-glow-color);
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="start-menu">
-        <h1 id="title">Welcome to Humanity Clicker</h1>
+        <h1 id="title">Humanity Clicker</h1>
         <button id="start-button">Start</button>
     </div>
     <div id="game-container">
@@ -461,6 +542,7 @@
         </div>
         <div id="upgrade-panel">
             <h2 id="era-title">Stone Age</h2>
+            <p id="era-description">Harsh winters and predators force adaptation.</p>
             <div id="upgrades"></div>
         </div>
         <div id="alert"></div>
@@ -474,6 +556,14 @@
         <button id="choice2"></button>
     </div>
     <div id="mysteriousWindow">The gods will remember that.</div>
+    <div id="welcomeModal">
+        <p>Welcome to Humanity Clicker!</p>
+        <p>Your goal is to advance through the ages of humanity by earning points and making strategic decisions.</p>
+        <p>Click the central area to earn points and buy upgrades to increase your points per click and passive points per second.</p>
+        <p>Each era presents a dilemma that will test your decision-making skills. Choose wisely to earn medals and advance to the next era.</p>
+        <p>Good luck, and may the gods of humanity guide your choices!</p>
+        <button id="close-welcome-modal">Start Game</button>
+    </div>
 
     <script>
         let points = 0;
@@ -481,6 +571,9 @@
         let upgradeClickValue = 0;
         let currentEra = 0;
         let medals = [];
+        let passiveIntervals = [];
+        let passivePoints = 0;
+        let glowingTextInterval = null;
         const eras = [
             {name: "Stone Age", color: "#8B4513", glow: "#FFA07A", medalColor: "#8B4513", advanceCost: 250, dilemma: {
                     narrative: "The winter is harsh, and food is scarce. You've located a herd of wild animals. Do you:",
@@ -489,9 +582,20 @@
                     medalDescription: "Medal of the Stone Age - For showing foresight by domesticating animals."
                 }, upgrades: [
                     {name: "Animal Domestication", cost: 100, effect: () => upgradeClickValue += 2, description: "Domesticating animals provides a stable food source, increasing points earned on click by 2.", color: "#654321", size: 20},
-                    {name: "Fire Mastery", cost: 50, effect: () => setInterval(() => points += 2, 1000), description: "Mastering fire provides warmth and protection, gaining 2 points per second.", color: "#DAA520", size: 25},
-                    {name: "Stone Tools", cost: 10, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.2), description: "Crafting stone tools improves efficiency in hunting and gathering, increasing click efficiency by 20%.", color: "#704214", size: 30},
-                ]},
+                    {name: "Fire Mastery", cost: 50, effect: () => {
+                        passivePoints += 2;
+                        updateGlowingText();
+                        if (!glowingTextInterval) {
+                            glowingTextInterval = setInterval(() => {
+                                points += passivePoints;
+                                updateScore(true);
+                                updateGlowingText();
+                            }, 1000);
+                            passiveIntervals.push(glowingTextInterval);
+                        }
+                    }, description: "Mastering fire provides warmth and protection, gaining 2 points per second.", color: "#DAA520", size: 25},
+                    {name: "Stone Tools", cost: 10, effect: () => upgradeClickValue += baseClickValue * 0.2, description: "Crafting stone tools improves efficiency in hunting and gathering, increasing click efficiency by 20%.", color: "#704214", size: 30},
+                ], description: "Harsh winters and predators force adaptation."},
             {name: "Bronze Age", color: "#CD7F32", glow: "#FF8C00", medalColor: "#CD7F32", advanceCost: 1500, dilemma: {
                     narrative: "Your tribe has discovered a new metal. Do you:",
                     choices: ["Use it for weapons to conquer neighboring tribes", "Use it for tools to improve farming"],
@@ -499,9 +603,12 @@
                     medalDescription: "Medal of the Bronze Age - For choosing peace and prosperity over war."
                 }, upgrades: [
                     {name: "Trade Routes", cost: 800, effect: () => upgradeClickValue += 4, description: "Establishing trade routes allows for the exchange of goods, increasing points earned on click by 4.", color: "#CD853F", size: 20},
-                    {name: "Irrigation Systems", cost: 400, effect: () => setInterval(() => points += 4, 1000), description: "Building irrigation systems improves crop yield, gaining 4 points per second.", color: "#D2691E", size: 25},
-                    {name: "Bronze Swords", cost: 200, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.3), description: "Forging bronze swords enhances combat capabilities, increasing click efficiency by 30%.", color: "#B22222", size: 30},
-                ]},
+                    {name: "Irrigation Systems", cost: 400, effect: () => {
+                        passivePoints += 4;
+                        updateGlowingText();
+                    }, description: "Building irrigation systems improves crop yield, gaining 4 points per second.", color: "#D2691E", size: 25},
+                    {name: "Bronze Swords", cost: 200, effect: () => upgradeClickValue += baseClickValue * 0.3, description: "Forging bronze swords enhances combat capabilities, increasing click efficiency by 30%.", color: "#B22222", size: 30},
+                ], description: "Metallurgy brings new tools and weapons, improving agriculture and warfare."},
             {name: "Iron Age", color: "#A9A9A9", glow: "#C0C0C0", medalColor: "#A9A9A9", advanceCost: 3000, dilemma: {
                     narrative: "Your kingdom is threatened by invaders. Do you:",
                     choices: ["Fortify your defenses and prepare for a siege", "Launch a preemptive strike to eliminate the threat"],
@@ -509,9 +616,12 @@
                     medalDescription: "Medal of the Iron Age - For prioritizing defense and strategic planning."
                 }, upgrades: [
                     {name: "Fortifications", cost: 4000, effect: () => upgradeClickValue += 8, description: "Building fortifications protects your kingdom, increasing points earned on click by 8.", color: "#808080", size: 20},
-                    {name: "Advanced Farming", cost: 2000, effect: () => setInterval(() => points += 8, 1000), description: "Advancing farming techniques improves food production, gaining 8 points per second.", color: "#A9A9A9", size: 25},
-                    {name: "Iron Swords", cost: 1000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.4), description: "Forging iron swords enhances military strength, increasing click efficiency by 40%.", color: "#696969", size: 30},
-                ]},
+                    {name: "Advanced Farming", cost: 2000, effect: () => {
+                        passivePoints += 8;
+                        updateGlowingText();
+                    }, description: "Advancing farming techniques improves food production, gaining 8 points per second.", color: "#A9A9A9", size: 25},
+                    {name: "Iron Swords", cost: 1000, effect: () => upgradeClickValue += baseClickValue * 0.4, description: "Forging iron swords enhances military strength, increasing click efficiency by 40%.", color: "#696969", size: 30},
+                ], description: "Stronger tools and weapons lead to powerful empires and advanced farming."},
             {name: "Classical Age", color: "#ADD8E6", glow: "#FFDAB9", medalColor: "#FFFACD", advanceCost: 6000, dilemma: {
                     narrative: "Your empire is at its peak. Do you:",
                     choices: ["Focus on cultural advancements and education", "Expand your territory through military conquest"],
@@ -519,9 +629,12 @@
                     medalDescription: "Medal of the Classical Age - For valuing knowledge and cultural growth."
                 }, upgrades: [
                     {name: "Literature", cost: 8000, effect: () => upgradeClickValue += 16, description: "Promoting literature spreads knowledge, increasing points earned on click by 16.", color: "#FFFACD", size: 20},
-                    {name: "Architecture", cost: 4000, effect: () => setInterval(() => points += 16, 1000), description: "Developing architecture creates monumental structures, gaining 16 points per second.", color: "#EEE8AA", size: 25},
-                    {name: "Philosophy", cost: 2000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.5), description: "Studying philosophy enhances wisdom, increasing click efficiency by 50%.", color: "#FFF8DC", size: 30},
-                ]},
+                    {name: "Architecture", cost: 4000, effect: () => {
+                        passivePoints += 16;
+                        updateGlowingText();
+                    }, description: "Developing architecture creates monumental structures, gaining 16 points per second.", color: "#EEE8AA", size: 25},
+                    {name: "Philosophy", cost: 2000, effect: () => upgradeClickValue += baseClickValue * 0.5, description: "Studying philosophy enhances wisdom, increasing click efficiency by 50%.", color: "#FFF8DC", size: 30},
+                ], description: "Cultural advancements and the spread of knowledge lead to a golden age."},
             {name: "Medieval Age", color: "#8A2BE2", glow: "#9370DB", medalColor: "#8A2BE2", advanceCost: 12000, dilemma: {
                     narrative: "Your kingdom faces internal strife. Do you:",
                     choices: ["Implement reforms to address the people's grievances", "Suppress the rebellion with force"],
@@ -529,9 +642,12 @@
                     medalDescription: "Medal of the Medieval Age - For addressing the needs of your people."
                 }, upgrades: [
                     {name: "Feudal System", cost: 40000, effect: () => upgradeClickValue += 32, description: "Implementing a feudal system organizes society, increasing points earned on click by 32.", color: "#9370DB", size: 20},
-                    {name: "Castles", cost: 20000, effect: () => setInterval(() => points += 32, 1000), description: "Building castles provides defense and control, gaining 32 points per second.", color: "#8A2BE2", size: 25},
-                    {name: "Knighthood", cost: 10000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.6), description: "Establishing knighthood strengthens the feudal system, increasing click efficiency by 60%.", color: "#9932CC", size: 30},
-                ]},
+                    {name: "Castles", cost: 20000, effect: () => {
+                        passivePoints += 32;
+                        updateGlowingText();
+                    }, description: "Building castles provides defense and control, gaining 32 points per second.", color: "#8A2BE2", size: 25},
+                    {name: "Knighthood", cost: 10000, effect: () => upgradeClickValue += baseClickValue * 0.6, description: "Establishing knighthood strengthens the feudal system, increasing click efficiency by 60%.", color: "#9932CC", size: 30},
+                ], description: "Feudal system, castles, and internal strife define this era."},
             {name: "Renaissance Age", color: "#FFDAB9", glow: "#FFDAB9", medalColor: "#FFD700", advanceCost: 24000, dilemma: {
                     narrative: "A new era of enlightenment is upon you. Do you:",
                     choices: ["Support the arts and sciences", "Focus on military expansion"],
@@ -539,9 +655,12 @@
                     medalDescription: "Medal of the Renaissance Age - For fostering creativity and innovation."
                 }, upgrades: [
                     {name: "Printing Press", cost: 80000, effect: () => upgradeClickValue += 64, description: "Inventing the printing press spreads knowledge, increasing points earned on click by 64.", color: "#FFD700", size: 20},
-                    {name: "Scientific Discovery", cost: 40000, effect: () => setInterval(() => points += 64, 1000), description: "Advancing scientific discovery leads to new inventions, gaining 64 points per second.", color: "#FFD700", size: 25},
-                    {name: "Art Patronage", cost: 20000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.7), description: "Supporting art patronage fosters creativity, increasing click efficiency by 70%.", color: "#FFD700", size: 30},
-                ]},
+                    {name: "Scientific Discovery", cost: 40000, effect: () => {
+                        passivePoints += 64;
+                        updateGlowingText();
+                    }, description: "Advancing scientific discovery leads to new inventions, gaining 64 points per second.", color: "#FFD700", size: 25},
+                    {name: "Art Patronage", cost: 20000, effect: () => upgradeClickValue += baseClickValue * 0.7, description: "Supporting art patronage fosters creativity, increasing click efficiency by 70%.", color: "#FFD700", size: 30},
+                ], description: "Arts and sciences flourish, leading to significant advancements."},
             {name: "Industrial Age", color: "#808080", glow: "#A9A9A9", medalColor: "#808080", advanceCost: 48000, dilemma: {
                     narrative: "Industrialization is changing the world. Do you:",
                     choices: ["Invest in factories and infrastructure", "Focus on worker rights and conditions"],
@@ -549,9 +668,12 @@
                     medalDescription: "Medal of the Industrial Age - For prioritizing the well-being of workers."
                 }, upgrades: [
                     {name: "Labor Laws", cost: 200000, effect: () => upgradeClickValue += 128, description: "Implementing labor laws improves worker conditions, increasing points earned on click by 128.", color: "#808080", size: 20},
-                    {name: "Railways", cost: 100000, effect: () => setInterval(() => points += 128, 1000), description: "Building railways enhances transportation, gaining 128 points per second.", color: "#A9A9A9", size: 25},
-                    {name: "Factories", cost: 50000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.8), description: "Improving worker conditions in factories boosts productivity, increasing click efficiency by 80%.", color: "#696969", size: 30},
-                ]},
+                    {name: "Railways", cost: 100000, effect: () => {
+                        passivePoints += 128;
+                        updateGlowingText();
+                    }, description: "Building railways enhances transportation, gaining 128 points per second.", color: "#A9A9A9", size: 25},
+                    {name: "Factories", cost: 50000, effect: () => upgradeClickValue += baseClickValue * 0.8, description: "Improving worker conditions in factories boosts productivity, increasing click efficiency by 80%.", color: "#696969", size: 30},
+                ], description: "Industrialization and urbanization bring significant changes to society."},
             {name: "Modern Age", color: "#008000", glow: "#00FF00", medalColor: "#008000", advanceCost: 96000, dilemma: {
                     narrative: "Technology is advancing rapidly. Do you:",
                     choices: ["Invest in renewable energy sources", "Focus on space exploration"],
@@ -559,9 +681,12 @@
                     medalDescription: "Medal of the Modern Age - For promoting sustainable energy solutions."
                 }, upgrades: [
                     {name: "Globalization", cost: 400000, effect: () => upgradeClickValue += 256, description: "Promoting globalization connects the world, increasing points earned on click by 256.", color: "#008000", size: 20},
-                    {name: "Internet", cost: 200000, effect: () => setInterval(() => points += 256, 1000), description: "Developing the internet enhances communication, gaining 256 points per second.", color: "#00FF00", size: 25},
-                    {name: "Renewable Energy", cost: 100000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 1.9), description: "Investing in renewable energy promotes sustainability, increasing click efficiency by 90%.", color: "#008000", size: 30},
-                ]},
+                    {name: "Internet", cost: 200000, effect: () => {
+                        passivePoints += 256;
+                        updateGlowingText();
+                    }, description: "Developing the internet enhances communication, gaining 256 points per second.", color: "#00FF00", size: 25},
+                    {name: "Renewable Energy", cost: 100000, effect: () => upgradeClickValue += baseClickValue * 0.9, description: "Investing in renewable energy promotes sustainability, increasing click efficiency by 90%.", color: "#008000", size: 30},
+                ], description: "Rapid technological advancements, globalization, and sustainable energy define this era."},
             {name: "Information Age", color: "#0000FF", glow: "#0000FF", medalColor: "#0000FF", advanceCost: 192000, dilemma: {
                     narrative: "Information is power. Do you:",
                     choices: ["Promote free and open information", "Control and censor information"],
@@ -569,9 +694,12 @@
                     medalDescription: "Medal of the Information Age - For advocating for freedom of information."
                 }, upgrades: [
                     {name: "Cyber Security", cost: 800000, effect: () => upgradeClickValue += 512, description: "Enhancing cyber security protects information, increasing points earned on click by 512.", color: "#0000FF", size: 20},
-                    {name: "Big Data", cost: 400000, effect: () => setInterval(() => points += 512, 1000), description: "Analyzing big data provides insights, gaining 512 points per second.", color: "#0000FF", size: 25},
-                    {name: "Social Media", cost: 200000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 2.0), description: "Protecting information on social media enhances communication, increasing click efficiency by 100%.", color: "#0000FF", size: 30},
-                ]},
+                    {name: "Big Data", cost: 400000, effect: () => {
+                        passivePoints += 512;
+                        updateGlowingText();
+                    }, description: "Analyzing big data provides insights, gaining 512 points per second.", color: "#0000FF", size: 25},
+                    {name: "Social Media", cost: 200000, effect: () => upgradeClickValue += baseClickValue * 1.0, description: "Protecting information on social media enhances communication, increasing click efficiency by 100%.", color: "#0000FF", size: 30},
+                ], description: "Rapid dissemination of information and digital technologies define this era."},
             {name: "AI Age", color: "#000000", glow: "#FF4500", medalColor: "#FF0000", advanceCost: 384000, dilemma: {
                     narrative: "AI has reached a critical point of development. Do you:",
                     choices: ["Implement strict controls on AI to maintain human oversight", "Allow AI autonomy to solve global issues"],
@@ -579,15 +707,19 @@
                     medalDescription: "Medal of the AI Age - For embracing the potential of AI for the betterment of society."
                 }, upgrades: [
                     {name: "Automated Society", cost: 1600000, effect: () => upgradeClickValue += 1024, description: "Creating an automated society enhances efficiency, increasing points earned on click by 1024.", color: "#FF4500", size: 20},
-                    {name: "Quantum Computing", cost: 800000, effect: () => setInterval(() => points += 1024, 1000), description: "Advancing quantum computing solves complex problems, gaining 1024 points per second.", color: "#FF6347", size: 25},
-                    {name: "Neural Network", cost: 400000, effect: () => upgradeClickValue = Math.round(upgradeClickValue * 2.1), description: "Developing neural networks improves AI capabilities, increasing click efficiency by 110%.", color: "#DC143C", size: 30},
-                ]}
+                    {name: "Quantum Computing", cost: 800000, effect: () => {
+                        passivePoints += 1024;
+                        updateGlowingText();
+                    }, description: "Advancing quantum computing solves complex problems, gaining 1024 points per second.", color: "#FF6347", size: 25},
+                    {name: "Neural Network", cost: 400000, effect: () => upgradeClickValue += baseClickValue * 1.1, description: "Developing neural networks improves AI capabilities, increasing click efficiency by 110%.", color: "#DC143C", size: 30},
+                ], description: "AI's potential to solve global issues or pose existential risks defines this era."}
         ];
         const mainGame = document.getElementById('main-game');
         const clickArea = document.getElementById('click-area');
         const scoreDisplay = document.getElementById('score');
         const upgradePanel = document.getElementById('upgrades');
         const eraTitle = document.getElementById('era-title');
+        const eraDescription = document.getElementById('era-description');
         const alertBox = document.getElementById('alert');
         const nextEraBtn = document.getElementById('next-era');
         const skipEraBtn = document.getElementById('skip-era');
@@ -601,11 +733,18 @@
         const startButton = document.getElementById('start-button');
         const gameContainer = document.getElementById('game-container');
         const startMenu = document.getElementById('start-menu');
+        const welcomeModal = document.getElementById('welcomeModal');
+        const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
 
         startButton.addEventListener('click', () => {
             startMenu.style.display = 'none';
             gameContainer.style.display = 'flex';
             updateEra();
+            welcomeModal.style.display = 'block';
+        });
+
+        closeWelcomeModalBtn.addEventListener('click', () => {
+            welcomeModal.style.display = 'none';
         });
 
         function updateEra() {
@@ -624,6 +763,7 @@
             clickArea.style.background = `radial-gradient(circle at 75% 25%, ${era.color}, #4ecdc4)`;
             document.documentElement.style.setProperty('--age-glow-color', era.glow);
             eraTitle.textContent = era.name;
+            eraDescription.textContent = era.description;
             upgradePanel.innerHTML = '';
 
             // Sort upgrades by cost in ascending order
@@ -663,16 +803,21 @@
             });
         }
 
+        let lastPoints = points;
+
         function updateScore(increase) {
             const scoreSpan = scoreDisplay.querySelector('span');
             scoreSpan.textContent = points.toFixed(1);
             scoreSpan.style.animation = 'none';
             scoreSpan.offsetHeight; /* Trigger reflow to restart animation */
-            if (increase) {
+            if (increase && points > lastPoints) {
                 scoreSpan.style.animation = 'bounce 0.3s ease-out, flashGreen 0.3s ease-out';
-            } else {
+            } else if (!increase && points < lastPoints) {
                 scoreSpan.style.animation = 'flashRed 0.3s ease-out';
+            } else if (points > lastPoints) {
+                scoreSpan.style.animation = 'flashGreen 0.3s ease-out';
             }
+            lastPoints = points;
         }
 
         function showAlert(message) {
@@ -725,10 +870,44 @@
             document.body.style.overflow = 'auto';
             if (chosen === correct) {
                 addMedal(currentEra);
+                showSuccessScreen();
             } else {
                 showMysteriousWindow();
+                showFailureScreen();
             }
             advanceEra();
+        }
+
+        function showSuccessScreen() {
+            const successMessage = document.createElement('div');
+            successMessage.className = 'alert';
+            successMessage.innerText = `The gods award you with a medal of ${eras[currentEra].dilemma.medalDescription}`;
+            successMessage.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+            successMessage.style.color = '#00ff00';
+            document.body.appendChild(successMessage);
+            setTimeout(() => {
+                document.body.removeChild(successMessage);
+            }, 3000);
+            document.body.style.backgroundColor = 'rgba(0, 255, 0, 0.1)';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '';
+            }, 1000);
+        }
+
+        function showFailureScreen() {
+            const failureMessage = document.createElement('div');
+            failureMessage.className = 'alert';
+            failureMessage.innerText = 'The gods will remember that.';
+            failureMessage.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+            failureMessage.style.color = '#ff0000';
+            document.body.appendChild(failureMessage);
+            setTimeout(() => {
+                document.body.removeChild(failureMessage);
+            }, 3000);
+            document.body.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '';
+            }, 1000);
         }
 
         function addMedal(eraIndex) {
@@ -802,9 +981,9 @@
         }
 
         function clearAllIntervals() {
-            for (let i = 1; i < 99999; i++) {
-                window.clearInterval(i);
-            }
+            passiveIntervals.forEach(interval => clearInterval(interval));
+            passiveIntervals = [];
+            glowingTextInterval = null;
         }
 
         function resetUpgrades() {
@@ -813,6 +992,7 @@
                 upgrade.classList.remove('active');
             });
             upgradeClickValue = 0;
+            passivePoints = 0;
         }
 
         function addStarsAndComets() {
@@ -869,6 +1049,40 @@
 
         skipEraBtn.addEventListener('click', () => {
             skipEra();
+        });
+
+        // Auto-update score every second
+        setInterval(() => {
+            points += passivePoints;
+            updateScore(true);
+        }, 1000);
+
+        function updateGlowingText() {
+            const glowingText = document.querySelector('.glowing-text');
+            if (glowingText) {
+                glowingText.textContent = `+${passivePoints}`;
+            } else {
+                const newGlowingText = document.createElement('div');
+                newGlowingText.className = 'glowing-text';
+                newGlowingText.textContent = `+${passivePoints}`;
+                newGlowingText.style.fontSize = '0.8em'; // Shrink the text size
+                newGlowingText.style.top = '-20px'; // Move the text higher
+                newGlowingText.style.right = '-20px'; // Move the text to the corner
+                scoreDisplay.appendChild(newGlowingText);
+                setTimeout(() => scoreDisplay.removeChild(newGlowingText), 1000);
+            }
+        }
+
+        // Ensure the glowing text appears every second
+        setInterval(() => {
+            updateGlowingText();
+        }, 1000);
+
+        // Ensure the score flashes green on passive gain even when switching tabs
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                updateScore(true);
+            }
         });
 
         updateEra();
