@@ -64,8 +64,11 @@
     </div>
     
     <!-- Load JavaScript files in correct order -->
-    <script src="game-data.js"></script>
+<!-- First load game-core.js which defines the basic variables -->
     <script src="game-core.js"></script>
+<!-- Then load game-data.js which uses those variables -->
+    <script src="game-data.js"></script>
+<!-- Finally load the other scripts -->
     <script src="visual-effects.js"></script>
     <script src="random-events.js"></script>
 </body>
