@@ -63,12 +63,80 @@
         <button id="close-welcome-modal">Praise to the Gods!</button>
     </div>
     
-    <!-- Load JavaScript files in correct order -->
-<!-- First load game-core.js which defines the basic variables -->
-    <script src="game-core.js"></script>
-<!-- Then load game-data.js which uses those variables -->
+    <!-- Define critical variables first -->
+    <script>
+    // Core game variables that need to be defined before other scripts load
+    let points = 0.0;
+    let baseClickValue = 1.0;
+    let upgradeClickValue = 0.0;
+    let currentEra = 0;
+    let medals = [];
+    let passivePoints = 0.0;
+    let passiveInterval = null;
+    let lastRandomEventTime = 0;
+    
+    // Helper function references that might be needed across files
+    function updateGlowingText() {
+        if (passivePoints > 0) {
+            const glowingText = document.querySelector(".glowing-text");
+            glowingText.textContent = `+${passivePoints.toFixed(1)}/s`;
+            glowingText.style.animation = "fadeOut 1s ease-out forwards, moveUp 1s ease-out forwards";
+            setTimeout(() => {
+                glowingText.style.animation = "";
+            }, 1000);
+        }
+    }
+    
+    function setupPassivePoints() {
+        if (passivePoints > 0) {
+            if (passiveInterval) {
+                clearInterval(passiveInterval);
+            }
+            passiveInterval = setInterval(() => {
+                points += passivePoints;
+                updateScore(true);
+                updateGlowingText();
+            }, 1000);
+        }
+    }
+    
+    function showAlert(message) {
+        const alertBox = document.getElementById('alert');
+        alertBox.innerText = message;
+        alertBox.style.display = 'block';
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 3000);
+    }
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 4000);
+    }
+    
+    function updateScore(isPassive = false) {
+        const scoreElement = document.getElementById("score").querySelector("span");
+        scoreElement.textContent = points.toFixed(1);
+        if (isPassive) {
+            scoreElement.style.animation = "flashGreen 0.5s ease-in-out";
+            scoreElement.addEventListener("animationend", () => {
+                scoreElement.style.animation = "";
+            }, { once: true });
+        }
+    }
+    </script>
+    
+    <!-- Load JavaScript files in the correct order -->
     <script src="game-data.js"></script>
-<!-- Finally load the other scripts -->
+    <script src="game-core.js"></script>
     <script src="visual-effects.js"></script>
     <script src="random-events.js"></script>
 </body>
