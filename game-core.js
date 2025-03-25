@@ -8,6 +8,13 @@ let passivePoints = 0.0;
 let passiveInterval = null;
 let lastRandomEventTime = 0;
 
+// Define random event probabilities
+const eventConfig = {
+    minTimeBetweenEvents: 60000, // 1 minute minimum between events
+    maxTimeBetweenEvents: 180000, // 3 minutes maximum
+    chanceOfEventOnClick: 0.02 // 2% chance of event per click
+};
+
 // DOM references
 let mainGame, clickArea, clickRipple, scoreDisplay, upgradePanel, eraTitle, eraDescription;
 let alertBox, nextEraBtn, skipEraBtn, particles, choiceModal, narrative, choice1, choice2;
