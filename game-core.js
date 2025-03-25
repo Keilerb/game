@@ -9,49 +9,134 @@ let passiveInterval = null;
 let lastRandomEventTime = 0;
 
 // DOM references
-const mainGame = document.getElementById('main-game');
-const clickArea = document.getElementById('click-area');
-const clickRipple = document.getElementById('click-ripple');
-const scoreDisplay = document.getElementById('score');
-const upgradePanel = document.getElementById('upgrades');
-const eraTitle = document.getElementById('era-title');
-const eraDescription = document.getElementById('era-description');
-const alertBox = document.getElementById('alert');
-const nextEraBtn = document.getElementById('next-era');
-const skipEraBtn = document.getElementById('skip-era');
-const particles = document.getElementById('particles');
-const choiceModal = document.getElementById('choiceModal');
-const narrative = document.getElementById('narrative');
-const choice1 = document.getElementById('choice1');
-const choice2 = document.getElementById('choice2');
-const medalsContainer = document.getElementById('medals');
-const mysteriousWindow = document.getElementById('mysteriousWindow');
-const startButton = document.getElementById('start-button');
-const gameContainer = document.getElementById('game-container');
-const startMenu = document.getElementById('start-menu');
-const welcomeModal = document.getElementById('welcomeModal');
-const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
-const randomDilemmaModal = document.getElementById('randomDilemmaModal');
-const dilemmaText = document.getElementById('dilemma-text');
-const dilemmaChoice1 = document.getElementById('dilemma-choice1');
-const dilemmaChoice2 = document.getElementById('dilemma-choice2');
+let mainGame, clickArea, clickRipple, scoreDisplay, upgradePanel, eraTitle, eraDescription;
+let alertBox, nextEraBtn, skipEraBtn, particles, choiceModal, narrative, choice1, choice2;
+let medalsContainer, mysteriousWindow, startButton, gameContainer, startMenu, welcomeModal;
+let closeWelcomeModalBtn, randomDilemmaModal, dilemmaText, dilemmaChoice1, dilemmaChoice2;
 
-// Initialize game
-startButton.addEventListener('click', () => {
-    startMenu.style.display = 'none';
-    gameContainer.style.display = 'flex';
-    updateEra();
-    welcomeModal.style.display = 'block';
+// Wait for DOM to be fully loaded before initializing
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DOM references
+    mainGame = document.getElementById('main-game');
+    clickArea = document.getElementById('click-area');
+    clickRipple = document.getElementById('click-ripple');
+    scoreDisplay = document.getElementById('score');
+    upgradePanel = document.getElementById('upgrades');
+    eraTitle = document.getElementById('era-title');
+    eraDescription = document.getElementById('era-description');
+    alertBox = document.getElementById('alert');
+    nextEraBtn = document.getElementById('next-era');
+    skipEraBtn = document.getElementById('skip-era');
+    particles = document.getElementById('particles');
+    choiceModal = document.getElementById('choiceModal');
+    narrative = document.getElementById('narrative');
+    choice1 = document.getElementById('choice1');
+    choice2 = document.getElementById('choice2');
+    medalsContainer = document.getElementById('medals');
+    mysteriousWindow = document.getElementById('mysteriousWindow');
+    startButton = document.getElementById('start-button');
+    gameContainer = document.getElementById('game-container');
+    startMenu = document.getElementById('start-menu');
+    welcomeModal = document.getElementById('welcomeModal');
+    closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
+    randomDilemmaModal = document.getElementById('randomDilemmaModal');
+    dilemmaText = document.getElementById('dilemma-text');
+    dilemmaChoice1 = document.getElementById('dilemma-choice1');
+    dilemmaChoice2 = document.getElementById('dilemma-choice2');
     
-    // Start random event timer
-    scheduleNextRandomEvent();
+    // Initialize game
+    initializeGame();
 });
 
-closeWelcomeModalBtn.addEventListener('click', () => {
-    welcomeModal.style.display = 'none';
-});
+// The initialization function that sets up the game
+function initializeGame() {
+    // Set up event listeners
+    startButton.addEventListener('click', () => {
+        startMenu.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        updateEra();
+        welcomeModal.style.display = 'block';
+        
+        // Start random event timer
+        scheduleNextRandomEvent();
+    });
 
-// Core game functions
+    closeWelcomeModalBtn.addEventListener('click', () => {
+        welcomeModal.style.display = 'none';
+    });
+    
+    // Click event handler
+    clickArea.addEventListener('click', (e) => {
+        points += baseClickValue + upgradeClickValue;
+        updateScore(true);
+        
+        // Visual feedback
+        clickArea.classList.add('clicked');
+        
+        // Add ripple effect
+        clickRipple.classList.remove('ripple-effect');
+        void clickRipple.offsetWidth; // Force reflow
+        clickRipple.classList.add('ripple-effect');
+        
+        // Create pulse ring
+        const pulseRing = document.createElement('div');
+        pulseRing.className = 'pulse-ring';
+        mainGame.appendChild(pulseRing);
+        setTimeout(() => {
+            if (mainGame.contains(pulseRing)) {
+                mainGame.removeChild(pulseRing);
+            }
+        }, 1500);
+        
+        // Add particles
+        for (let i = 0; i < 10; i++) {
+            let x = e.clientX + (Math.random() - 0.5) * 50;
+            let y = e.clientY + (Math.random() - 0.5) * 50;
+            createParticle(x, y);
+        }
+        
+        // Add click value indicator
+        const clickGlowingText = document.createElement('div');
+        clickGlowingText.className = 'click-glowing-text';
+        clickGlowingText.textContent = `+${(baseClickValue + upgradeClickValue).toFixed(1)}`;
+        clickGlowingText.style.left = `${e.clientX}px`;
+        clickGlowingText.style.top = `${e.clientY}px`;
+        mainGame.appendChild(clickGlowingText);
+        setTimeout(() => {
+            if (mainGame.contains(clickGlowingText)) {
+                mainGame.removeChild(clickGlowingText);
+            }
+        }, 1000);
+        
+        setTimeout(() => {
+            clickArea.classList.remove('clicked');
+        }, 300);
+        
+        // Check for random event
+        checkForRandomEvent();
+    });
+    
+    nextEraBtn.addEventListener('click', () => {
+        if (currentEra < eras.length - 1) {
+            if (points >= eras[currentEra].advanceCost) {
+                showChoice();
+            } else {
+                showAlert(`Need ${eras[currentEra].advanceCost} points to advance!`);
+            }
+        } else {
+            if (medals.length === eras.length - 1) {
+                showAlert('You have reached the true final era!');
+            } else {
+                showAlert("You need all Medals of History to advance past the final age!");
+            }
+        }
+    });
+
+    skipEraBtn.addEventListener('click', () => {
+        advanceEra();
+    });
+}
+
 function updateScore(isPassive = false) {
     const scoreElement = document.getElementById("score").querySelector("span");
     scoreElement.textContent = points.toFixed(1);
@@ -194,8 +279,23 @@ function showNotification(message) {
     
     // Remove after animation completes
     setTimeout(() => {
-        document.body.removeChild(notification);
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
     }, 4000);
+}
+
+function createParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particles.appendChild(particle);
+    setTimeout(() => {
+        if (particles && particles.contains(particle)) {
+            particles.removeChild(particle);
+        }
+    }, 1000);
 }
 
 function explodeOrbits() {
@@ -203,7 +303,7 @@ function explodeOrbits() {
     orbits.forEach(orbit => {
         orbit.style.animation = 'explode 1s forwards';
         setTimeout(() => {
-            if (mainGame.contains(orbit)) {
+            if (mainGame && mainGame.contains(orbit)) {
                 mainGame.removeChild(orbit);
             }
         }, 1000);
@@ -255,7 +355,9 @@ function showSuccessScreen() {
     successMessage.style.transform = 'translate(-50%, -50%)';
     document.body.appendChild(successMessage);
     setTimeout(() => {
-        document.body.removeChild(successMessage);
+        if (document.body.contains(successMessage)) {
+            document.body.removeChild(successMessage);
+        }
     }, 3000);
     document.body.style.backgroundColor = 'rgba(0, 255, 0, 0.1)';
     setTimeout(() => {
@@ -275,7 +377,9 @@ function showFailureScreen() {
     failureMessage.style.transform = 'translate(-50%, -50%)';
     document.body.appendChild(failureMessage);
     setTimeout(() => {
-        document.body.removeChild(failureMessage);
+        if (document.body.contains(failureMessage)) {
+            document.body.removeChild(failureMessage);
+        }
     }, 3000);
     document.body.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
     setTimeout(() => {
@@ -335,76 +439,6 @@ function advanceEra() {
     }
 }
 
-// Event handlers for main buttons
-nextEraBtn.addEventListener('click', () => {
-    if (currentEra < eras.length - 1) {
-        if (points >= eras[currentEra].advanceCost) {
-            showChoice();
-        } else {
-            showAlert(`Need ${eras[currentEra].advanceCost} points to advance!`);
-        }
-    } else {
-        if (medals.length === eras.length - 1) {
-            showAlert('You have reached the true final era!');
-        } else {
-            showAlert("You need all Medals of History to advance past the final age!");
-        }
-    }
-});
-
-skipEraBtn.addEventListener('click', () => {
-    advanceEra();
-});
-
-// Click event handler
-clickArea.addEventListener('click', (e) => {
-    points += baseClickValue + upgradeClickValue;
-    updateScore(true);
-    
-    // Visual feedback
-    clickArea.classList.add('clicked');
-    
-    // Add ripple effect
-    clickRipple.classList.remove('ripple-effect');
-    void clickRipple.offsetWidth; // Force reflow
-    clickRipple.classList.add('ripple-effect');
-    
-    // Create pulse ring
-    const pulseRing = document.createElement('div');
-    pulseRing.className = 'pulse-ring';
-    mainGame.appendChild(pulseRing);
-    setTimeout(() => {
-        mainGame.removeChild(pulseRing);
-    }, 1500);
-    
-    // Add particles
-    for (let i = 0; i < 10; i++) {
-        let x = e.clientX + (Math.random() - 0.5) * 50;
-        let y = e.clientY + (Math.random() - 0.5) * 50;
-        createParticle(x, y);
-    }
-    
-    // Add click value indicator
-    const clickGlowingText = document.createElement('div');
-    clickGlowingText.className = 'click-glowing-text';
-    clickGlowingText.textContent = `+${(baseClickValue + upgradeClickValue).toFixed(1)}`;
-    clickGlowingText.style.left = `${e.clientX}px`;
-    clickGlowingText.style.top = `${e.clientY}px`;
-    mainGame.appendChild(clickGlowingText);
-    setTimeout(() => {
-        if (mainGame.contains(clickGlowingText)) {
-            mainGame.removeChild(clickGlowingText);
-        }
-    }, 1000);
-    
-    setTimeout(() => {
-        clickArea.classList.remove('clicked');
-    }, 300);
-    
-    // Check for random event
-    checkForRandomEvent();
-});
-
 // Schedule and check for random events
 function scheduleNextRandomEvent() {
     const delay = Math.random() * (eventConfig.maxTimeBetweenEvents - eventConfig.minTimeBetweenEvents) + eventConfig.minTimeBetweenEvents;
@@ -445,3 +479,124 @@ function triggerRandomEvent() {
     // Display the dilemma
     showRandomDilemma(randomDilemma);
 }
+
+function showRandomDilemma(dilemma) {
+    // Set dilemma content
+    const dilemmaTitle = randomDilemmaModal.querySelector('h3');
+    dilemmaTitle.textContent = dilemma.title || "Event!";
+    dilemmaText.textContent = dilemma.description;
+    
+    dilemmaChoice1.textContent = dilemma.options[0].text;
+    dilemmaChoice2.textContent = dilemma.options[1].text;
+    
+    // Show modal
+    randomDilemmaModal.style.display = 'block';
+    
+    // Set up choice handlers
+    dilemmaChoice1.onclick = () => {
+        handleRandomDilemmaChoice(dilemma.options[0].outcome);
+    };
+    
+    dilemmaChoice2.onclick = () => {
+        handleRandomDilemmaChoice(dilemma.options[1].outcome);
+    };
+}
+
+function handleRandomDilemmaChoice(outcome) {
+    // Hide the modal
+    randomDilemmaModal.style.display = 'none';
+    
+    // Apply outcome effects
+    if (outcome.message) {
+        showAlert(outcome.message);
+    }
+    
+    // Apply point loss if specified
+    if (outcome.pointsLost) {
+        points = Math.max(0, points - outcome.pointsLost);
+        updateScore(false);
+        
+        // Visual feedback for point loss
+        const scoreElement = document.getElementById("score").querySelector("span");
+        scoreElement.style.animation = "flashRed 0.5s ease-in-out";
+        scoreElement.addEventListener("animationend", () => {
+            scoreElement.style.animation = "";
+        }, { once: true });
+    }
+    
+    // Apply custom effect if specified
+    if (typeof outcome.effect === 'function') {
+        outcome.effect();
+    }
+    
+    // Create appropriate visual feedback based on outcome
+    if (outcome.message && outcome.message.includes("Lost") || outcome.pointsLost) {
+        createFlashEffect('#FF000033'); // Reddish flash for negative outcomes
+    } else {
+        createFlashEffect('#00FF0033'); // Greenish flash for positive outcomes
+    }
+}
+
+// Visual effect helpers
+function createFlashEffect(color = '#FFFFFF') {
+    const flash = document.createElement('div');
+    flash.style.position = 'fixed';
+    flash.style.top = '0';
+    flash.style.left = '0';
+    flash.style.width = '100%';
+    flash.style.height = '100%';
+    flash.style.backgroundColor = color;
+    flash.style.opacity = '0.3';
+    flash.style.pointerEvents = 'none';
+    flash.style.zIndex = '1000';
+    flash.style.animation = 'fadeOut 0.5s forwards';
+    
+    document.body.appendChild(flash);
+    
+    setTimeout(() => {
+        if (document.body.contains(flash)) {
+            document.body.removeChild(flash);
+        }
+    }, 500);
+}
+
+// Clean up animations periodically
+function cleanUpAnimations() {
+    const oldParticles = document.querySelectorAll('.particle');
+    const oldTexts = document.querySelectorAll('.click-glowing-text');
+    const oldRings = document.querySelectorAll('.pulse-ring');
+    
+    oldParticles.forEach(p => {
+        if (particles && particles.contains(p)) {
+            particles.removeChild(p);
+        }
+    });
+    
+    oldTexts.forEach(t => {
+        if (mainGame && mainGame.contains(t)) {
+            mainGame.removeChild(t);
+        }
+    });
+    
+    oldRings.forEach(r => {
+        if (mainGame && mainGame.contains(r)) {
+            mainGame.removeChild(r);
+        }
+    });
+}
+
+// Clean up on page visibility change
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        cleanUpAnimations();
+        updateScore(true);
+    }
+});
+
+// Ensure the glowing text appears every second
+setInterval(() => {
+    updateGlowingText();
+}, 1000);
+
+// Clean up animations every 5 minutes
+setInterval(cleanUpAnimations, 300000);
