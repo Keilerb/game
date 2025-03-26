@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Realm Survivor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Chakra Petch', monospace;
+        }
+
+        body {
+            background: #0a0a1a;
+            color: #00ffff;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0a0a1a;
+        }
+
+        #hudContainer {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        #topHud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #scoreDisplay {
+            color: #00ffff;
+            font-size: 20px;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #levelDisplay {
+            color: #00ffff;
+            font-size: 20px;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #timerDisplay {
+            color: #00ffff;
+            font-size: 20px;
+            text-shadow: 0 0 5px #00ffff;
+        }
+
+        #xpBarContainer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 10px;
+            background-color: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+        }
+
+        #xpBar {
+            height: 100%;
+            width: 0%;
+            background-color: #00ffff;
+        }
+
+        #weaponsContainer {
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .weaponIcon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #00ffff;
+            position: relative;
+            pointer-events: auto;
+        }
+
+        .weaponLevel {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 12px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weaponTooltip {
+            position: absolute;
+            bottom: 0;
+            left: 60px;
+            width: 250px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            pointer-events: none;
+            z-index: 1100;
+        }
+
+        .weaponTooltip h3 {
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .weaponTooltip p {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .weaponStats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            pointer-events: auto;
+        }
+
+        #titleScreen h1 {
+            font-size: 60px;
+            color: #00ffff;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 40px;
+        }
+
+        .characterSelection {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .characterCard {
+            width: 200px;
+            height: 300px;
+            background-color: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .characterCard:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            background-color: rgba(0, 255, 255, 0.2);
+        }
+
+        .characterIcon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #00ffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #0a0a1a;
+            margin-bottom: 15px;
+        }
+
+        .characterName {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #00ffff;
+        }
+
+        .characterStats {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .characterStats p {
+            margin: 5px 0;
+        }
+
+        .menuButton {
+            width: 250px;
+            padding: 15px;
+            margin: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            text-align: center;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .menuButton:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #levelUpScreen {
+            display: none;
+        }
+
+        #levelUpScreen h2 {
+            font-size: 40px;
+            color: #00ffff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .upgradeOption {
+            width: 300px;
+            padding: 20px;
+            margin: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .upgradeOption:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .upgradeTitle {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .upgradeDescription {
+            font-size: 16px;
+        }
+
+        #gameOverScreen {
+            display: none;
+        }
+
+        #gameOverScreen h2 {
+            font-size: 60px;
+            color: #ff0000;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #ff0000;
+        }
+
+        #finalStats {
+            font-size: 24px;
+            color: #00ffff;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .floatingText {
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 0 0 5px black;
+            animation: floatUp 1s forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        #damagePreventionIndicator {
+            position: absolute;
+            left: 50%;
+            bottom: 60px;
+            transform: translateX(-50%);
+            color: yellow;
+            font-size: 16px;
+            text-shadow: 0 0 5px black;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hudContainer">
+        <div id="topHud">
+            <div id="levelDisplay">Level: 1</div>
+            <div id="timerDisplay">Time: 00:00</div>
+            <div id="scoreDisplay">Score: 0</div>
+        </div>
+        <div id="weaponsContainer"></div>
+        <div id="xpBarContainer">
+            <div id="xpBar"></div>
+        </div>
+        <div id="damagePreventionIndicator">Damage Prevented!</div>
+    </div>
+
+    <div id="titleScreen" class="overlay">
+        <h1>REALM SURVIVOR</h1>
+        <div class="characterSelection">
+            <div class="characterCard" data-character="knight">
+                <div class="characterIcon">K</div>
+                <div class="characterName">KNIGHT</div>
+                <div class="characterStats">
+                    <p>HP: ⭐⭐⭐⭐</p>
+                    <p>Speed: ⭐⭐</p>
+                    <p>Attack: ⭐⭐⭐</p>
+                    <p>Starting weapon: Whip</p>
+                    <p>Special: 20% Damage Resist</p>
+                </div>
+            </div>
+            <div class="characterCard" data-character="rogue">
+                <div class="characterIcon">R</div>
+                <div class="characterName">ROGUE</div>
+                <div class="characterStats">
+                    <p>HP: ⭐⭐</p>
+                    <p>Speed: ⭐⭐⭐⭐</p>
+                    <p>Attack: ⭐⭐</p>
+                    <p>Starting weapon: Knives</p>
+                    <p>Special: 15% Movement Speed</p>
+                </div>
+            </div>
+            <div class="characterCard" data-character="mage">
+                <div class="characterIcon">M</div>
+                <div class="characterName">MAGE</div>
+                <div class="characterStats">
+                    <p>HP: ⭐⭐</p>
+                    <p>Speed: ⭐⭐</p>
+                    <p>Attack: ⭐⭐⭐⭐</p>
+                    <p>Starting weapon: Magic Orb</p>
+                    <p>Special: 20% Attack Speed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="levelUpScreen" class="overlay">
+        <h2>LEVEL UP!</h2>
+        <div id="upgradeOptions"></div>
+    </div>
+
+    <div id="gameOverScreen" class="overlay">
+        <h2>GAME OVER</h2>
+        <div id="finalStats"></div>
+        <button class="menuButton" id="restartButton">PLAY AGAIN</button>
+    </div>
+
+    <script>
+        // Game instance
+        let game;
+
+        // Initialize when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded - initializing game");
+            
+            // Create game instance
+            game = new RealmSurvivor();
+            
+            // Setup character selection - FIXED CODE
+            const characterCards = document.querySelectorAll('.characterCard');
+            console.log("Found character cards:", characterCards.length);
+            
+            characterCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const character = this.getAttribute('data-character');
+                    console.log("Character selected:", character);
+                    game.startGame(character);
+                });
+            });
+            
+            // Setup restart button
+            document.getElementById('restartButton').addEventListener('click', function() {
+                game.gameOverScreen.style.display = 'none';
+                game.titleScreen.style.display = 'flex';
+            });
+        });
+
+        class RealmSurvivor {
+            constructor() {
+                console.log("Game initializing...");
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.scoreDisplay = document.getElementById('scoreDisplay');
+                this.levelDisplay = document.getElementById('levelDisplay');
+                this.timerDisplay = document.getElementById('timerDisplay');
+                this.xpBar = document.getElementById('xpBar');
+                this.weaponsContainer = document.getElementById('weaponsContainer');
+                this.damagePreventionIndicator = document.getElementById('damagePreventionIndicator');
+                
+                this.titleScreen = document.getElementById('titleScreen');
+                this.levelUpScreen = document.getElementById('levelUpScreen');
+                this.upgradeOptions = document.getElementById('upgradeOptions');
+                this.gameOverScreen = document.getElementById('gameOverScreen');
+                this.finalStats = document.getElementById('finalStats');
+                
+                // Initialize game
+                this.setupEventListeners();
+                this.setupGame();
+                console.log("Game initialized");
+            }
+
+            setupGame() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                // Game constants
+                this.MAP_SIZE = 3000; // Size of the game world
+                this.TILE_SIZE = 64; // Size of background tiles
+                this.CAMERA_SPEED = 0.1; // Camera smoothing factor
+                this.DAMAGE_COOLDOWN = 1000; // Milliseconds between damage instances
+                
+                // Define character base stats
+                this.characterStats = {
+                    knight: {
+                        maxHealth: 150,
+                        speed: 3,
+                        damageResistance: 0.2,
+                        startingWeapon: 'whip',
+                        color: '#00ccff'
+                    },
+                    rogue: {
+                        maxHealth: 100,
+                        speed: 4.5,
+                        damageResistance: 0,
+                        startingWeapon: 'knives',
+                        color: '#ff3399'
+                    },
+                    mage: {
+                        maxHealth: 80,
+                        speed: 3,
+                        damageResistance: 0,
+                        attackSpeedBonus: 0.2,
+                        startingWeapon: 'magicOrb',
+                        color: '#cc00ff'
+                    }
+                };
+                
+                // Define all weapons
+                this.weaponDefinitions = {
+                    whip: {
+                        name: 'Energy Whip',
+                        description: 'A whip of pure energy that damages enemies in front of you',
+                        icon: '⚡',
+                        type: 'whip',
+                        damage: 15,
+                        cooldown: 1500,
+                        radius: 150,
+                        color: '#00ccff',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Sharpened Whip', description: 'Increased damage by 30%', effect: { damage: 20 } },
+                            { level: 3, name: 'Extended Reach', description: 'Increases attack area by 25%', effect: { radius: 190 } },
+                            { level: 4, name: 'Faster Strikes', description: 'Reduces cooldown by 15%', effect: { cooldown: 1275 } },
+                            { level: 5, name: 'Dual Strike', description: 'Adds a second attack shortly after the first', effect: { doubleHit: true } },
+                            { level: 6, name: 'Energy Surge', description: 'Increases damage by 50%', effect: { damage: 30 } },
+                            { level: 7, name: 'Area Extension', description: 'Further increases attack area by 25%', effect: { radius: 240 } },
+                            { level: 8, name: 'Legendary Whip', description: 'Maximum power: Double damage and reduced cooldown', effect: { damage: 60, cooldown: 1000 } }
+                        ]
+                    },
+                    knives: {
+                        name: 'Throwing Knives',
+                        description: 'Rapidly throw knives at the nearest enemies',
+                        icon: '🗡️',
+                        type: 'projectile',
+                        damage: 25,
+                        cooldown: 800,
+                        projectileSpeed: 8,
+                        projectileSize: 8,
+                        count: 1,
+                        color: '#ff3399',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Sharpened Blades', description: 'Increases damage by 20%', effect: { damage: 30 } },
+                            { level: 3, name: 'Double Throw', description: 'Throw two knives at once', effect: { count: 2 } },
+                            { level: 4, name: 'Rapid Throwing', description: 'Decreases cooldown by 20%', effect: { cooldown: 640 } },
+                            { level: 5, name: 'Triple Throw', description: 'Throw three knives at once', effect: { count: 3 } },
+                            { level: 6, name: 'Poisoned Blades', description: 'Knives deal additional damage over time', effect: { poisonDamage: 5 } },
+                            { level: 7, name: 'Expert Throwing', description: 'Further decreases cooldown by 20%', effect: { cooldown: 500 } },
+                            { level: 8, name: 'Legendary Knives', description: 'Maximum power: More knives and damage', effect: { count: 5, damage: 40 } }
+                        ]
+                    },
+                    magicOrb: {
+                        name: 'Magic Orb',
+                        description: 'A slow-moving orb that deals high damage to enemies it passes through',
+                        icon: '🔮',
+                        type: 'orbiting',
+                        damage: 40,
+                        cooldown: 3000,
+                        orbitSpeed: 1,
+                        orbitDistance: 100,
+                        orbitRadius: 20,
+                        count: 1,
+                        color: '#cc00ff',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Enhanced Orb', description: 'Increases damage by 25%', effect: { damage: 50 } },
+                            { level: 3, name: 'Swift Orbiting', description: 'Increases orbit speed by 30%', effect: { orbitSpeed: 1.3 } },
+                            { level: 4, name: 'Dual Orbit', description: 'Adds a second orb', effect: { count: 2 } },
+                            { level: 5, name: 'Arcane Power', description: 'Increases damage by 40%', effect: { damage: 70 } },
+                            { level: 6, name: 'Triple Orbit', description: 'Adds a third orb', effect: { count: 3 } },
+                            { level: 7, name: 'Expanded Orbit', description: 'Increases orbit radius', effect: { orbitRadius: 30 } },
+                            { level: 8, name: 'Legendary Orbs', description: 'Maximum power: More orbs and damage', effect: { count: 4, damage: 100 } }
+                        ]
+                    },
+                    axe: {
+                        name: 'Spinning Axe',
+                        description: 'Throws axes that spin outward, dealing damage on contact',
+                        icon: '🪓',
+                        type: 'projectile',
+                        damage: 60,
+                        cooldown: 2000,
+                        projectileSpeed: 5,
+                        projectileSize: 15,
+                        count: 1,
+                        color: '#ff6600',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Heavy Axe', description: 'Increases damage by 25%', effect: { damage: 75 } },
+                            { level: 3, name: 'Double Throw', description: 'Throws two axes at once', effect: { count: 2 } },
+                            { level: 4, name: 'Faster Throwing', description: 'Decreases cooldown by 20%', effect: { cooldown: 1600 } },
+                            { level: 5, name: 'Piercing Axe', description: 'Axes pass through enemies', effect: { piercing: true } },
+                            { level: 6, name: 'Triple Throw', description: 'Throws three axes at once', effect: { count: 3 } },
+                            { level: 7, name: 'Massive Damage', description: 'Increases damage by 50%', effect: { damage: 110 } },
+                            { level: 8, name: 'Legendary Axe', description: 'Maximum power: More axes and damage', effect: { count: 4, damage: 150 } }
+                        ]
+                    },
+                    fireWand: {
+                        name: 'Fire Wand',
+                        description: 'Creates an explosion around the player, dealing damage to nearby enemies',
+                        icon: '🔥',
+                        type: 'explosion',
+                        damage: 35,
+                        cooldown: 2500,
+                        radius: 150,
+                        color: '#ff3300',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Intensified Flames', description: 'Increases damage by 30%', effect: { damage: 45 } },
+                            { level: 3, name: 'Wider Blast', description: 'Increases explosion radius by 20%', effect: { radius: 180 } },
+                            { level: 4, name: 'Rapid Casting', description: 'Decreases cooldown by 20%', effect: { cooldown: 2000 } },
+                            { level: 5, name: 'Lasting Flames', description: 'Creates a burning field that damages enemies over time', effect: { burnEffect: true } },
+                            { level: 6, name: 'Inferno', description: 'Increases damage by 50%', effect: { damage: 70 } },
+                            { level: 7, name: 'Massive Explosion', description: 'Further increases explosion radius by 30%', effect: { radius: 240 } },
+                            { level: 8, name: 'Legendary Wand', description: 'Maximum power: Double damage and reduced cooldown', effect: { damage: 140, cooldown: 1500 } }
+                        ]
+                    },
+                    holyBook: {
+                        name: 'Holy Book',
+                        description: 'Summons pages that orbit and damage enemies on contact',
+                        icon: '📖',
+                        type: 'orbiting',
+                        damage: 20,
+                        cooldown: 1000,
+                        orbitSpeed: 2,
+                        orbitDistance: 80,
+                        orbitRadius: 15,
+                        count: 2,
+                        color: '#ffffff',
+                        level: 1,
+                        maxLevel: 8,
+                        upgrades: [
+                            { level: 2, name: 'Additional Page', description: 'Adds one more page to the orbit', effect: { count: 3 } },
+                            { level: 3, name: 'Blessed Pages', description: 'Increases damage by 25%', effect: { damage: 25 } },
+                            { level: 4, name: 'Faster Orbit', description: 'Increases orbit speed by 25%', effect: { orbitSpeed: 2.5 } },
+                            { level: 5, name: 'More Pages', description: 'Adds two more pages to the orbit', effect: { count: 5 } },
+                            { level: 6, name: 'Sacred Texts', description: 'Increases damage by 40%', effect: { damage: 35 } },
+                            { level: 7, name: 'Expanded Orbit', description: 'Increases orbit distance by 25%', effect: { orbitDistance: 100 } },
+                            { level: 8, name: 'Legendary Book', description: 'Maximum power: More pages and damage', effect: { count: 8, damage: 50 } }
+                        ]
+                    }
+                };
+                
+                // Define item upgrades
+                this.itemUpgrades = [
+                    {
+                        name: 'Heart Container',
+                        description: 'Increases max health by 20',
+                        effect: (state) => {
+                            state.player.maxHealth += 20;
+                            state.player.health += 20;
+                        }
+                    },
+                    {
+                        name: 'Speed Boots',
+                        description: 'Increases movement speed by 10%',
+                        effect: (state) => {
+                            state.player.speed *= 1.1;
+                        }
+                    },
+                    {
+                        name: 'Magic Crystal',
+                        description: 'Decreases all weapon cooldowns by 8%',
+                        effect: (state) => {
+                            state.player.weapons.forEach(weapon => {
+                                weapon.cooldown *= 0.92;
+                            });
+                        }
+                    },
+                    {
+                        name: 'XP Magnet',
+                        description: 'Increases gem attraction radius by 25%',
+                        effect: (state) => {
+                            state.player.pickupRange *= 1.25;
+                        }
+                    },
+                    {
+                        name: 'Damage Amplifier',
+                        description: 'Increases all weapon damage by 15%',
+                        effect: (state) => {
+                            state.player.weapons.forEach(weapon => {
+                                weapon.damage *= 1.15;
+                            });
+                        }
+                    },
+                    {
+                        name: 'Shield Rune',
+                        description: 'Increases damage resistance by 10%',
+                        effect: (state) => {
+                            state.player.damageResistance = (state.player.damageResistance || 0) + 0.1;
+                        }
+                    }
+                ];
+                
+                // Initial game state
+                this.state = {
+                    player: null, // Will be set when game starts
+                    camera: {
+                        x: 0,
+                        y: 0
+                    },
+                    enemies: [],
+                    projectiles: [],
+                    orbs: [],
+                    pickups: [],
+                    effects: [],
+                    keys: {},
+                    score: 0,
+                    gameTime: 0,
+                    lastUpdate: 0,
+                    deltaTime: 0,
+                    gameRunning: false,
+                    paused: false,
+                    lastDamageTime: 0
+                };
+                
+                // Show title screen
+                this.titleScreen.style.display = 'flex';
+            }
+
+            setupEventListeners() {
+                // Keyboard controls
+                window.addEventListener('keydown', (e) => {
+                    this.state.keys[e.code] = true;
+                    
+                    // Prevent scrolling with arrow keys
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                        e.preventDefault();
+                    }
+                });
+                
+                window.addEventListener('keyup', (e) => {
+                    this.state.keys[e.code] = false;
+                });
+                
+                // Window resize
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                });
+            }
+
+            startGame(characterType) {
+                console.log("Starting game with character: " + characterType);
+                
+                // Hide title screen
+                this.titleScreen.style.display = 'none';
+                
+                // Create player based on selected character
+                const stats = this.characterStats[characterType];
+                this.state.player = {
+                    x: this.MAP_SIZE / 2,
+                    y: this.MAP_SIZE / 2,
+                    radius: 20,
+                    color: stats.color,
+                    speed: stats.speed,
+                    health: stats.maxHealth,
+                    maxHealth: stats.maxHealth,
+                    damageResistance: stats.damageResistance || 0,
+                    attackSpeedBonus: stats.attackSpeedBonus || 0,
+                    level: 1,
+                    xp: 0,
+                    xpToNextLevel: 10,
+                    pickupRange: 70, // Base pickup range
+                    weapons: [],
+                    direction: { x: 0, y: 0 },
+                    characterType: characterType
+                };
+                
+                // Add starting weapon
+                const weaponType = stats.startingWeapon;
+                const startingWeapon = this.deepCopy(this.weaponDefinitions[weaponType]);
+                
+                // Apply character attack speed bonus if applicable
+                if (this.state.player.attackSpeedBonus) {
+                    startingWeapon.cooldown *= (1 - this.state.player.attackSpeedBonus);
+                }
+                
+                this.state.player.weapons.push(startingWeapon);
+                
+                // Set up UI
+                this.updateWeaponsUI();
+                
+                // Reset game state
+                this.state.enemies = [];
+                this.state.projectiles = [];
+                this.state.orbs = [];
+                this.state.pickups = [];
+                this.state.effects = [];
+                this.state.score = 0;
+                this.state.gameTime = 0;
+                this.state.gameRunning = true;
+                this.state.lastUpdate = Date.now();
+                
+                // Start game loop
+                this.gameLoop();
+            }
+
+            gameLoop() {
+                if (!this.state.gameRunning) return;
+                
+                // Calculate delta time
+                const now = Date.now();
+                this.state.deltaTime = (now - this.state.lastUpdate) / 1000; // Convert to seconds
+                this.state.lastUpdate = now;
+                
+                // Cap delta time to prevent huge jumps
+                const cappedDelta = Math.min(this.state.deltaTime, 0.05);
+                
+                // Update game state
+                this.update(cappedDelta);
+                
+                // Render game
+                this.render();
+                
+                // Continue loop
+                requestAnimationFrame(() => this.gameLoop());
+            }
+
+            update(deltaTime) {
+                if (this.state.paused) return;
+                
+                // Update game time
+                this.state.gameTime += deltaTime;
+                
+                // Update timer display
+                const minutes = Math.floor(this.state.gameTime / 60);
+                const seconds = Math.floor(this.state.gameTime % 60);
+                this.timerDisplay.textContent = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Update player movement
+                this.updatePlayerMovement(deltaTime);
+                
+                // Update camera position
+                this.updateCamera();
+                
+                // Update weapons
+                this.updateWeapons(deltaTime);
+                
+                // Spawn enemies
+                this.spawnEnemies(deltaTime);
+                
+                // Update enemies
+                this.updateEnemies(deltaTime);
+                
+                // Update projectiles
+                this.updateProjectiles(deltaTime);
+
+                // Update orbs
+                this.updateOrbs(deltaTime);
+                
+                // Update effects
+                this.updateEffects(deltaTime);
+                
+                // Check collisions
+                this.checkCollisions();
+            }
+
+            updatePlayerMovement(deltaTime) {
+                // Reset movement direction
+                this.state.player.direction = { x: 0, y: 0 };
+                
+                // Calculate movement based on key presses
+                if (this.state.keys['KeyW'] || this.state.keys['ArrowUp']) {
+                    this.state.player.direction.y = -1;
+                }
+                if (this.state.keys['KeyS'] || this.state.keys['ArrowDown']) {
+                    this.state.player.direction.y = 1;
+                }
+                if (this.state.keys['KeyA'] || this.state.keys['ArrowLeft']) {
+                    this.state.player.direction.x = -1;
+                }
+                if (this.state.keys['KeyD'] || this.state.keys['ArrowRight']) {
+                    this.state.player.direction.x = 1;
+                }
+                
+                // Normalize diagonal movement
+                if (this.state.player.direction.x !== 0 && this.state.player.direction.y !== 0) {
+                    const length = Math.sqrt(
+                        this.state.player.direction.x * this.state.player.direction.x + 
+                        this.state.player.direction.y * this.state.player.direction.y
+                    );
+                    this.state.player.direction.x /= length;
+                    this.state.player.direction.y /= length;
+                }
+                
+                // Apply movement speed (use 60fps as baseline for consistent movement regardless of framerate)
+                const moveX = this.state.player.direction.x * this.state.player.speed * 60 * deltaTime;
+                const moveY = this.state.player.direction.y * this.state.player.speed * 60 * deltaTime;
+                
+                // Update player position
+                this.state.player.x += moveX;
+                this.state.player.y += moveY;
+                
+                // Keep player within map bounds
+                this.state.player.x = Math.max(this.state.player.radius, Math.min(this.state.player.x, this.MAP_SIZE - this.state.player.radius));
+                this.state.player.y = Math.max(this.state.player.radius, Math.min(this.state.player.y, this.MAP_SIZE - this.state.player.radius));
+            }
+
+            updateCamera() {
+                // Target position (camera centered on player)
+                const targetX = this.state.player.x - this.canvas.width / 2;
+                const targetY = this.state.player.y - this.canvas.height / 2;
+                
+                // Smooth camera movement (lerp)
+                this.state.camera.x += (targetX - this.state.camera.x) * this.CAMERA_SPEED;
+                this.state.camera.y += (targetY - this.state.camera.y) * this.CAMERA_SPEED;
+                
+                // Keep camera within map bounds
+                this.state.camera.x = Math.max(0, Math.min(this.state.camera.x, this.MAP_SIZE - this.canvas.width));
+                this.state.camera.y = Math.max(0, Math.min(this.state.camera.y, this.MAP_SIZE - this.canvas.height));
+            }
+
+            updateWeapons(deltaTime) {
+                // Process each weapon
+                for (const weapon of this.state.player.weapons) {
+                    const now = Date.now();
+                    if (now - (weapon.lastFired || 0) > weapon.cooldown) {
+                        weapon.lastFired = now;
+                        
+                        // Fire weapon based on type
+                        switch (weapon.type) {
+                            case 'whip':
+                                this.fireWhip(weapon);
+                                
+                                // Fire second whip if double hit is enabled
+                                if (weapon.doubleHit) {
+                                    setTimeout(() => {
+                                        if (this.state.gameRunning) {
+                                            this.fireWhip(weapon);
+                                        }
+                                    }, 300);
+                                }
+                                break;
+                                
+                            case 'projectile':
+                                this.fireProjectile(weapon);
+                                break;
+                                
+                            case 'orbiting':
+                                this.updateOrbitingWeapon(weapon);
+                                break;
+                                
+                            case 'explosion':
+                                this.createExplosion(weapon);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            fireWhip(weapon) {
+                // Attack in the direction of player movement
+                let attackDirection = { ...this.state.player.direction };
+                
+                // If player is not moving, attack in a random direction
+                if (attackDirection.x === 0 && attackDirection.y === 0) {
+                    const angle = Math.random() * Math.PI * 2;
+                    attackDirection = { 
+                        x: Math.cos(angle), 
+                        y: Math.sin(angle) 
+                    };
+                }
+                
+                // Create attack effect
+                this.state.effects.push({
+                    type: 'whip',
+                    x: this.state.player.x,
+                    y: this.state.player.y,
+                    direction: attackDirection,
+                    radius: weapon.radius,
+                    damage: weapon.damage,
+                    color: weapon.color,
+                    alpha: 0.8,
+                    lifetime: 0,
+                    maxLifetime: 400,
+                    hitEnemies: new Set() // Track which enemies are hit by this attack
+                });
+            }
+
+            fireProjectile(weapon) {
+                const count = weapon.count || 1;
+                
+                for (let i = 0; i < count; i++) {
+                    // Find closest enemy
+                    let closestEnemy = null;
+                    let closestDistance = Infinity;
+                    
+                    for (const enemy of this.state.enemies) {
+                        const dx = enemy.x - this.state.player.x;
+                        const dy = enemy.y - this.state.player.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestEnemy = enemy;
+                        }
+                    }
+                    
+                    // Calculate direction
+                    let direction = { x: 0, y: 0 };
+                    
+                    if (closestEnemy) {
+                        // Aim at closest enemy
+                        const dx = closestEnemy.x - this.state.player.x;
+                        const dy = closestEnemy.y - this.state.player.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        direction.x = dx / distance;
+                        direction.y = dy / distance;
+                    } else {
+                        // No enemies, fire in random direction
+                        const angle = Math.random() * Math.PI * 2;
+                        direction.x = Math.cos(angle);
+                        direction.y = Math.sin(angle);
+                    }
+                    
+                    // Add randomness for multiple projectiles
+                    if (count > 1) {
+                        const spreadAngle = (Math.random() - 0.5) * Math.PI / 4;
+                        const cos = Math.cos(spreadAngle);
+                        const sin = Math.sin(spreadAngle);
+                        
+                        const newX = direction.x * cos - direction.y * sin;
+                        const newY = direction.x * sin + direction.y * cos;
+                        
+                        direction.x = newX;
+                        direction.y = newY;
+                    }
+                    
+                    // Create projectile
+                    this.state.projectiles.push({
+                        x: this.state.player.x,
+                        y: this.state.player.y,
+                        radius: weapon.projectileSize,
+                        color: weapon.color,
+                        velocity: {
+                            x: direction.x * weapon.projectileSpeed,
+                            y: direction.y * weapon.projectileSpeed
+                        },
+                        damage: weapon.damage,
+                        piercing: weapon.piercing || false,
+                        poisonDamage: weapon.poisonDamage,
+                        lifetime: 0,
+                        maxLifetime: 2000,
+                        weaponType: weapon.type
+                    });
+                }
+            }
+
+            updateOrbitingWeapon(weapon) {
+                // Make sure orbs exist for this weapon
+                const existingOrbs = this.state.orbs.filter(orb => orb.weaponId === weapon.name);
+                
+                // Create orbs if they don't exist or count changed
+                if (existingOrbs.length !== weapon.count) {
+                    // Remove existing orbs for this weapon
+                    this.state.orbs = this.state.orbs.filter(orb => orb.weaponId !== weapon.name);
+                    
+                    // Create new orbs
+                    const angleStep = (Math.PI * 2) / weapon.count;
+                    
+                    for (let i = 0; i < weapon.count; i++) {
+                        this.state.orbs.push({
+                            weaponId: weapon.name,
+                            angle: angleStep * i,
+                            orbitSpeed: weapon.orbitSpeed,
+                            orbitDistance: weapon.orbitDistance,
+                            radius: weapon.orbitRadius,
+                            color: weapon.color,
+                            damage: weapon.damage
+                        });
+                    }
+                } else {
+                    // Update existing orbs with current weapon stats
+                    for (const orb of existingOrbs) {
+                        orb.damage = weapon.damage;
+                        orb.orbitSpeed = weapon.orbitSpeed;
+                        orb.orbitDistance = weapon.orbitDistance;
+                        orb.radius = weapon.orbitRadius;
+                    }
+                }
+            }
+
+            createExplosion(weapon) {
+                this.state.effects.push({
+                    type: 'explosion',
+                    x: this.state.player.x,
+                    y: this.state.player.y,
+                    radius: 0,
+                    maxRadius: weapon.radius,
+                    damage: weapon.damage,
+                    color: weapon.color,
+                    burnEffect: weapon.burnEffect,
+                    lifetime: 0,
+                    maxLifetime: 500,
+                    hitEnemies: new Set()
+                });
+            }
+
+            spawnEnemies(deltaTime) {
+                // Calculate spawn chance based on game time
+                // More enemies spawn as time progresses
+                const baseSpawnRate = 1.5; // Base enemies per second (increased from before)
+                const timeMultiplier = 1 + Math.min(2.5, this.state.gameTime / 60); // Increases over time, caps at 3.5x
+                const spawnChance = baseSpawnRate * timeMultiplier * deltaTime;
+                
+                if (Math.random() < spawnChance) {
+                    // Spawn position (outside the camera view)
+                    const angle = Math.random() * Math.PI * 2;
+                    const spawnDistance = 700; // Distance from player (increased to be further off screen)
+                    
+                    const spawnX = this.state.player.x + Math.cos(angle) * spawnDistance;
+                    const spawnY = this.state.player.y + Math.sin(angle) * spawnDistance;
+                    
+                    // Only spawn if position is within map bounds
+                    if (spawnX >= 0 && spawnX <= this.MAP_SIZE && spawnY >= 0 && spawnY <= this.MAP_SIZE) {
+                        // Enemy types
+                        const enemyTypes = [
+                            { type: 'basic', health: 20, speed: 1.5, radius: 15, color: '#ff0000', damage: 5, xpValue: 1 },
+                            { type: 'fast', health: 10, speed: 2.5, radius: 10, color: '#ff8800', damage: 3, xpValue: 2 },
+                            { type: 'tank', health: 60, speed: 0.8, radius: 25, color: '#880000', damage: 8, xpValue: 3 },
+                            { type: 'ghost', health: 15, speed: 2, radius: 12, color: 'rgba(0, 255, 255, 0.5)', damage: 4, xpValue: 2, phasing: true }
+                        ];
+                        
+                        // Select random enemy type (weighted based on game time)
+                        let randomIndex;
+                        if (this.state.gameTime < 60) {
+                            // First minute: mostly basic enemies
+                            randomIndex = Math.random() < 0.8 ? 0 : 1;
+                        } else if (this.state.gameTime < 180) {
+                            // 1-3 minutes: mix of basic, fast, and some tanks
+                            const roll = Math.random();
+                            if (roll < 0.5) randomIndex = 0;
+                            else if (roll < 0.8) randomIndex = 1;
+                            else randomIndex = 2;
+                        } else {
+                            // After 3 minutes: any enemy type
+                            randomIndex = Math.floor(Math.random() * enemyTypes.length);
+                        }
+                        
+                        const enemyType = enemyTypes[randomIndex];
+                        
+                        // Scale health with time
+                        const healthMultiplier = 1 + Math.min(2, this.state.gameTime / 180);
+                        
+                        // Create enemy
+                        this.state.enemies.push({
+                            ...enemyType,
+                            x: spawnX,
+                            y: spawnY,
+                            health: enemyType.health * healthMultiplier,
+                            maxHealth: enemyType.health * healthMultiplier,
+                            poisoned: false
+                        });
+                    }
+                }
+            }
+
+            updateEnemies(deltaTime) {
+                for (let i = 0; i < this.state.enemies.length; i++) {
+                    const enemy = this.state.enemies[i];
+                    
+                    // Handle poison damage if applicable
+                    if (enemy.poisoned) {
+                        enemy.poisonTimer = (enemy.poisonTimer || 0) + deltaTime;
+                        if (enemy.poisonTimer >= 0.5) { // Apply poison damage every 0.5 seconds
+                            enemy.poisonTimer = 0;
+                            enemy.health -= enemy.poisonDamage;
+                            
+                            // Show poison damage
+                            this.createFloatingText(
+                                enemy.x - this.state.camera.x, 
+                                enemy.y - this.state.camera.y, 
+                                enemy.poisonDamage.toString(), 
+                                '#00ff00'
+                            );
+                            
+                            // Check if enemy died from poison
+                            if (enemy.health <= 0) {
+                                this.killEnemy(i);
+                                i--; // Adjust index after removal
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    // Direction to player
+                    const dx = this.state.player.x - enemy.x;
+                    const dy = this.state.player.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Normalize direction
+                    const dirX = dx / distance;
+                    const dirY = dy / distance;
+                    
+                    // Move enemy towards player
+                    enemy.x += dirX * enemy.speed * 60 * deltaTime;
+                    enemy.y += dirY * enemy.speed * 60 * deltaTime;
+                    
+                    // Keep enemy within map bounds
+                    enemy.x = Math.max(enemy.radius, Math.min(enemy.x, this.MAP_SIZE - enemy.radius));
+                    enemy.y = Math.max(enemy.radius, Math.min(enemy.y, this.MAP_SIZE - enemy.radius));
+                }
+            }
+
+            updateProjectiles(deltaTime) {
+                for (let i = this.state.projectiles.length - 1; i >= 0; i--) {
+                    const projectile = this.state.projectiles[i];
+                    
+                    // Update position
+                    projectile.x += projectile.velocity.x * 60 * deltaTime;
+                    projectile.y += projectile.velocity.y * 60 * deltaTime;
+                    
+                    // Update lifetime
+                    projectile.lifetime += deltaTime * 1000;
+                    
+                    // Remove if lifetime exceeded
+                    if (projectile.lifetime >= projectile.maxLifetime) {
+                        this.state.projectiles.splice(i, 1);
+                    }
+                    // Remove if outside map
+                    else if (
+                        projectile.x < 0 || 
+                        projectile.x > this.MAP_SIZE || 
+                        projectile.y < 0 || 
+                        projectile.y > this.MAP_SIZE
+                    ) {
+                        this.state.projectiles.splice(i, 1);
+                    }
+                }
+            }
+
+            updateOrbs(deltaTime) {
+                for (const orb of this.state.orbs) {
+                    // Update orbit angle
+                    orb.angle += orb.orbitSpeed * deltaTime;
+                    if (orb.angle > Math.PI * 2) {
+                        orb.angle -= Math.PI * 2;
+                    }
+                    
+                    // Calculate position
+                    const x = this.state.player.x + Math.cos(orb.angle) * orb.orbitDistance;
+                    const y = this.state.player.y + Math.sin(orb.angle) * orb.orbitDistance;
+                    
+                    // Check collisions with enemies
+                    for (let i = 0; i < this.state.enemies.length; i++) {
+                        const enemy = this.state.enemies[i];
+                        const dx = x - enemy.x;
+                        const dy = y - enemy.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < orb.radius + enemy.radius) {
+                            // Apply damage
+                            enemy.health -= orb.damage * deltaTime; // Scale damage based on time
+                            
+                            // Show damage occasionally
+                            if (Math.random() < 0.1) {
+                                this.createFloatingText(
+                                    enemy.x - this.state.camera.x, 
+                                    enemy.y - this.state.camera.y, 
+                                    Math.floor(orb.damage).toString()
+                                );
+                            }
+                            
+                            // Check if enemy died
+                            if (enemy.health <= 0) {
+                                this.killEnemy(i);
+                                i--; // Adjust index after removal
+                            }
+                        }
+                    }
+                }
+            }
+
+            updateEffects(deltaTime) {
+                for (let i = this.state.effects.length - 1; i >= 0; i--) {
+                    const effect = this.state.effects[i];
+                    
+                    // Update lifetime
+                    effect.lifetime += deltaTime * 1000;
+                    
+                    // Handle effect based on type
+                    if (effect.type === 'whip') {
+                        // Check for enemy hits within whip radius
+                        const progress = effect.lifetime / effect.maxLifetime;
+                        const currentRadius = effect.radius * progress;
+                        
+                        // Only check for hits during the first half of the animation
+                        if (progress < 0.5) {
+                            for (let j = 0; j < this.state.enemies.length; j++) {
+                                const enemy = this.state.enemies[j];
+                                
+                                // Skip enemies that were already hit by this attack
+                                if (effect.hitEnemies.has(enemy)) continue;
+                                
+                                // Get direction vector to enemy from player
+                                const dx = enemy.x - this.state.player.x;
+                                const dy = enemy.y - this.state.player.y;
+                                const distance = Math.sqrt(dx * dx + dy * dy);
+                                
+                                // Normalize enemy direction vector
+                                const enemyDirX = dx / distance;
+                                const enemyDirY = dy / distance;
+                                
+                                // Dot product to check if enemy is in front of player (in whip direction)
+                                const dotProduct = enemyDirX * effect.direction.x + enemyDirY * effect.direction.y;
+                                
+                                // Check if enemy is within whip radius and in front of player
+                                if (distance <= currentRadius && dotProduct > 0.3) {
+                                    // Record hit
+                                    effect.hitEnemies.add(enemy);
+                                    
+                                    // Apply damage
+                                    enemy.health -= effect.damage;
+                                    
+                                    // Show damage number
+                                    this.createFloatingText(
+                                        enemy.x - this.state.camera.x, 
+                                        enemy.y - this.state.camera.y, 
+                                        effect.damage.toString()
+                                    );
+                                    
+                                    // Check if enemy died
+                                    if (enemy.health <= 0) {
+                                        this.killEnemy(j);
+                                        j--; // Adjust index after removal
+                                    }
+                                }
+                            }
+                        }
+                    } else if (effect.type === 'explosion') {
+                        // Update explosion radius
+                        const progress = effect.lifetime / effect.maxLifetime;
+                        effect.radius = effect.maxRadius * progress;
+                        
+                        // Only check for hits during the first half of the animation
+                        if (progress < 0.5) {
+                            for (let j = 0; j < this.state.enemies.length; j++) {
+                                const enemy = this.state.enemies[j];
+                                
+                                // Skip enemies that were already hit by this explosion
+                                if (effect.hitEnemies.has(enemy)) continue;
+                                
+                                // Get distance to enemy from explosion center
+                                const dx = enemy.x - effect.x;
+                                const dy = enemy.y - effect.y;
+                                const distance = Math.sqrt(dx * dx + dy * dy);
+                                
+                                // Check if enemy is within explosion radius
+                                if (distance <= effect.radius + enemy.radius) {
+                                    // Record hit
+                                    effect.hitEnemies.add(enemy);
+                                    
+                                    // Apply damage
+                                    enemy.health -= effect.damage;
+                                    
+                                    // Apply burn effect if enabled
+                                    if (effect.burnEffect) {
+                                        enemy.poisoned = true;
+                                        enemy.poisonTimer = 0;
+                                        enemy.poisonDamage = Math.floor(effect.damage * 0.2);
+                                    }
+                                    
+                                    // Show damage number
+                                    this.createFloatingText(
+                                        enemy.x - this.state.camera.x, 
+                                        enemy.y - this.state.camera.y, 
+                                        effect.damage.toString(),
+                                        effect.color
+                                    );
+                                    
+                                    // Check if enemy died
+                                    if (enemy.health <= 0) {
+                                        this.killEnemy(j);
+                                        j--; // Adjust index after removal
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Remove effect if lifetime exceeded
+                    if (effect.lifetime >= effect.maxLifetime) {
+                        this.state.effects.splice(i, 1);
+                    }
+                }
+            }
+
+            checkCollisions() {
+                // Player - Enemy collisions
+                const now = Date.now();
+                const canTakeDamage = now - this.state.lastDamageTime > this.DAMAGE_COOLDOWN;
+                
+                for (let i = this.state.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.state.enemies[i];
+                    
+                    // Distance between player and enemy
+                    const dx = this.state.player.x - enemy.x;
+                    const dy = this.state.player.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Check for collision
+                    if (distance < this.state.player.radius + enemy.radius) {
+                        // Player takes damage if not in invulnerability period
+                        if (canTakeDamage) {
+                            // Calculate damage with resistance
+                            const damageAmount = Math.floor(enemy.damage * (1 - this.state.player.damageResistance));
+                            this.state.player.health -= damageAmount;
+                            this.state.lastDamageTime = now;
+                            
+                            // Show damage amount
+                            this.createFloatingText(
+                                this.state.player.x - this.state.camera.x,
+                                this.state.player.y - this.state.camera.y,
+                                damageAmount.toString(),
+                                '#ff0000'
+                            );
+                            
+                            // If damage was reduced, show indicator
+                            if (this.state.player.damageResistance > 0) {
+                                const preventedDamage = Math.floor(enemy.damage * this.state.player.damageResistance);
+                                if (preventedDamage > 0) {
+                                    this.showDamagePreventionIndicator(preventedDamage);
+                                }
+                            }
+                            
+                            // Check if player died
+                            if (this.state.player.health <= 0) {
+                                this.gameOver();
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                // Projectile - Enemy collisions
+                for (let i = this.state.projectiles.length - 1; i >= 0; i--) {
+                    const projectile = this.state.projectiles[i];
+                    let hitEnemy = false;
+                    
+                    for (let j = this.state.enemies.length - 1; j >= 0; j--) {
+                        const enemy = this.state.enemies[j];
+                        const dx = projectile.x - enemy.x;
+                        const dy = projectile.y - enemy.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < projectile.radius + enemy.radius) {
+                            // Apply damage
+                            enemy.health -= projectile.damage;
+                            
+                            // Apply poison if applicable
+                            if (projectile.poisonDamage) {
+                                enemy.poisoned = true;
+                                enemy.poisonTimer = 0;
+                                enemy.poisonDamage = projectile.poisonDamage;
+                            }
+                            
+                            // Show damage
+                            this.createFloatingText(
+                                enemy.x - this.state.camera.x, 
+                                enemy.y - this.state.camera.y, 
+                                projectile.damage.toString()
+                            );
+                            
+                            // Check if enemy died
+                            if (enemy.health <= 0) {
+                                this.killEnemy(j);
+                                j--; // Adjust index after removal
+                            }
+                            
+                            hitEnemy = true;
+                            
+                            // If not piercing, remove projectile
+                            if (!projectile.piercing) {
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Remove projectile if it hit an enemy and isn't piercing
+                    if (hitEnemy && !projectile.piercing) {
+                        this.state.projectiles.splice(i, 1);
+                    }
+                }
+                
+                // Player - Pickup collisions
+                const pickupRange = this.state.player.pickupRange;
+                for (let i = this.state.pickups.length - 1; i >= 0; i--) {
+                    const pickup = this.state.pickups[i];
+                    
+                    // Distance between player and pickup
+                    const dx = this.state.player.x - pickup.x;
+                    const dy = this.state.player.y - pickup.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Move pickups towards player if in range
+                    if (distance < pickupRange) {
+                        const moveSpeed = Math.min(10, 20 * (1 - distance / pickupRange));
+                        const dirX = dx / distance;
+                        const dirY = dy / distance;
+                        
+                        pickup.x += dirX * moveSpeed;
+                        pickup.y += dirY * moveSpeed;
+                    }
+                    
+                    // Check for collection
+                    if (distance < this.state.player.radius + pickup.radius) {
+                        // Apply pickup effect
+                        if (pickup.type === 'xp') {
+                            this.addXP(pickup.value);
+                        }
+                        
+                        // Remove pickup
+                        this.state.pickups.splice(i, 1);
+                    }
+                }
+            }
+
+            killEnemy(index) {
+                const enemy = this.state.enemies[index];
+                
+                // Add score
+                this.state.score += enemy.xpValue * 10;
+                this.scoreDisplay.textContent = `Score: ${this.state.score}`;
+                
+                // Create XP pickup
+                this.state.pickups.push({
+                    type: 'xp',
+                    x: enemy.x,
+                    y: enemy.y,
+                    radius: 5,
+                    color: '#00ffff',
+                    value: enemy.xpValue
+                });
+                
+                // Remove enemy
+                this.state.enemies.splice(index, 1);
+            }
+
+            addXP(amount) {
+                this.state.player.xp += amount;
+                
+                // Check for level up
+                if (this.state.player.xp >= this.state.player.xpToNextLevel) {
+                    this.levelUp();
+                }
+                
+                // Update XP bar
+                const xpPercentage = (this.state.player.xp / this.state.player.xpToNextLevel) * 100;
+                this.xpBar.style.width = `${xpPercentage}%`;
+            }
+
+            levelUp() {
+                this.state.player.level++;
+                this.state.player.xp -= this.state.player.xpToNextLevel;
+                this.state.player.xpToNextLevel = Math.floor(this.state.player.xpToNextLevel * 1.2);
+                
+                // Update level display
+                this.levelDisplay.textContent = `Level: ${this.state.player.level}`;
+                
+                // Pause game and show level up screen
+                this.state.paused = true;
+                this.showLevelUpScreen();
+            }
+
+            showLevelUpScreen() {
+                this.upgradeOptions.innerHTML = '';
+                
+                // Prepare upgrade options
+                let availableUpgrades = [];
+                
+                // Add weapon upgrades
+                const upgradeableWeapons = this.state.player.weapons.filter(w => w.level < w.maxLevel);
+                
+                if (upgradeableWeapons.length > 0) {
+                    // Select a random weapon to upgrade
+                    const weaponToUpgrade = upgradeableWeapons[Math.floor(Math.random() * upgradeableWeapons.length)];
+                    const upgrade = weaponToUpgrade.upgrades[weaponToUpgrade.level - 1];
+                    
+                    availableUpgrades.push({
+                        type: 'weaponUpgrade',
+                        weapon: weaponToUpgrade,
+                        name: upgrade.name,
+                        description: upgrade.description,
+                        effect: upgrade.effect
+                    });
+                }
+                
+                // Add new weapon if player doesn't have all weapons
+                const playerWeaponTypes = this.state.player.weapons.map(w => w.type);
+                const availableWeaponTypes = Object.keys(this.weaponDefinitions).filter(key => {
+                    const weapon = this.weaponDefinitions[key];
+                    return !playerWeaponTypes.includes(weapon.type);
+                });
+                
+                if (availableWeaponTypes.length > 0) {
+                    const randomWeaponType = availableWeaponTypes[Math.floor(Math.random() * availableWeaponTypes.length)];
+                    const newWeapon = this.weaponDefinitions[randomWeaponType];
+                    
+                    availableUpgrades.push({
+                        type: 'newWeapon',
+                        weapon: this.deepCopy(newWeapon),
+                        name: `New Weapon: ${newWeapon.name}`,
+                        description: newWeapon.description
+                    });
+                }
+                
+                // Add item upgrades (passive bonuses)
+                const shuffledItems = [...this.itemUpgrades].sort(() => 0.5 - Math.random()).slice(0, 2);
+                
+                for (const item of shuffledItems) {
+                    availableUpgrades.push({
+                        type: 'itemUpgrade',
+                        name: item.name,
+                        description: item.description,
+                        effect: item.effect
+                    });
+                }
+                
+                // Make sure we have at least 3 upgrades (repeat if necessary)
+                while (availableUpgrades.length < 3) {
+                    const randomItemUpgrade = this.itemUpgrades[Math.floor(Math.random() * this.itemUpgrades.length)];
+                    availableUpgrades.push({
+                        type: 'itemUpgrade',
+                        name: randomItemUpgrade.name,
+                        description: randomItemUpgrade.description,
+                        effect: randomItemUpgrade.effect
+                    });
+                }
+                
+                // Select random 3 options
+                availableUpgrades = availableUpgrades.sort(() => 0.5 - Math.random()).slice(0, 3);
+                
+                // Create upgrade options elements
+                availableUpgrades.forEach(upgrade => {
+                    const option = document.createElement('div');
+                    option.className = 'upgradeOption';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'upgradeTitle';
+                    title.textContent = upgrade.name;
+                    
+                    const description = document.createElement('div');
+                    description.className = 'upgradeDescription';
+                    description.textContent = upgrade.description;
+                    
+                    option.appendChild(title);
+                    option.appendChild(description);
+                    
+                    option.addEventListener('click', () => {
+                        // Apply upgrade
+                        this.applyUpgrade(upgrade);
+                        
+                        // Hide level up screen and resume game
+                        this.levelUpScreen.style.display = 'none';
+                        this.state.paused = false;
+                    });
+                    
+                    this.upgradeOptions.appendChild(option);
+                });
+                
+                // Show level up screen
+                this.levelUpScreen.style.display = 'flex';
+            }
+
+            applyUpgrade(upgrade) {
+                switch (upgrade.type) {
+                    case 'weaponUpgrade':
+                        const weapon = upgrade.weapon;
+                        weapon.level++;
+                        
+                        // Apply effects
+                        for (const [key, value] of Object.entries(upgrade.effect)) {
+                            weapon[key] = value;
+                        }
+                        break;
+                        
+                    case 'newWeapon':
+                        // Add new weapon to player's arsenal
+                        this.state.player.weapons.push(upgrade.weapon);
+                        break;
+                        
+                    case 'itemUpgrade':
+                        // Apply passive item effect
+                        upgrade.effect(this.state);
+                        break;
+                }
+                
+                // Update weapons UI
+                this.updateWeaponsUI();
+            }
+
+            updateWeaponsUI() {
+                // Clear weapons container
+                this.weaponsContainer.innerHTML = '';
+                
+                // Add weapon icons
+                this.state.player.weapons.forEach(weapon => {
+                    const weaponElement = document.createElement('div');
+                    weaponElement.className = 'weaponIcon';
+                    weaponElement.textContent = weapon.icon;
+                    
+                    // Add level indicator
+                    const levelElement = document.createElement('div');
+                    levelElement.className = 'weaponLevel';
+                    levelElement.textContent = weapon.level;
+                    weaponElement.appendChild(levelElement);
+                    
+                    // Add tooltip
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'weaponTooltip';
+                    
+                    const name = document.createElement('h3');
+                    name.textContent = weapon.name;
+                    tooltip.appendChild(name);
+                    
+                    const description = document.createElement('p');
+                    description.textContent = weapon.description;
+                    tooltip.appendChild(description);
+                    
+                    const stats = document.createElement('div');
+                    stats.className = 'weaponStats';
+                    
+                    const damageElement = document.createElement('p');
+                    damageElement.textContent = `Damage: ${weapon.damage}`;
+                    stats.appendChild(damageElement);
+                    
+                    const cooldownElement = document.createElement('p');
+                    cooldownElement.textContent = `Cooldown: ${(weapon.cooldown / 1000).toFixed(1)}s`;
+                    stats.appendChild(cooldownElement);
+                    
+                    tooltip.appendChild(stats);
+                    
+                    weaponElement.appendChild(tooltip);
+                    
+                    // Add hover functionality
+                    weaponElement.addEventListener('mouseenter', () => {
+                        tooltip.style.display = 'block';
+                    });
+                    
+                    weaponElement.addEventListener('mouseleave', () => {
+                        tooltip.style.display = 'none';
+                    });
+                    
+                    this.weaponsContainer.appendChild(weaponElement);
+                });
+            }
+
+            showDamagePreventionIndicator(amount) {
+                const indicator = this.damagePreventionIndicator;
+                indicator.textContent = `Damage Prevented: ${amount}`;
+                indicator.style.opacity = 1;
+                
+                // Hide after 2 seconds
+                setTimeout(() => {
+                    indicator.style.opacity = 0;
+                }, 2000);
+            }
+
+            createFloatingText(x, y, text, color = 'white') {
+                const element = document.createElement('div');
+                element.className = 'floatingText';
+                element.textContent = text;
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+                element.style.color = color;
+                
+                document.body.appendChild(element);
+                
+                // Remove element after animation completes
+                setTimeout(() => {
+                    if (document.body.contains(element)) {
+                        document.body.removeChild(element);
+                    }
+                }, 1000);
+            }
+
+            gameOver() {
+                this.state.gameRunning = false;
+                
+                // Update final stats
+                this.finalStats.innerHTML = `
+                    <p>Time Survived: ${this.timerDisplay.textContent.slice(6)}</p>
+                    <p>Score: ${this.state.score}</p>
+                    <p>Level: ${this.state.player.level}</p>
+                    <p>Enemies Defeated: ${Math.floor(this.state.score / 10)}</p>
+                    <p>Character: ${this.state.player.characterType.charAt(0).toUpperCase() + this.state.player.characterType.slice(1)}</p>
+                `;
+                
+                // Show game over screen
+                this.gameOverScreen.style.display = 'flex';
+            }
+
+            // Utility function for deep copying objects
+            deepCopy(obj) {
+                return JSON.parse(JSON.stringify(obj));
+            }
+
+            render() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background grid
+                this.drawBackground();
+                
+                // Draw pickups
+                this.drawPickups();
+                
+                // Draw enemies
+                this.drawEnemies();
+                
+                // Draw projectiles
+                this.drawProjectiles();
+                
+                // Draw player
+                this.drawPlayer();
+                
+                // Draw orbs
+                this.drawOrbs();
+                
+                // Draw effects
+                this.drawEffects();
+            }
+
+            drawBackground() {
+                // Draw grid
+                this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+                this.ctx.lineWidth = 1;
+                
+                const startX = Math.floor(this.state.camera.x / this.TILE_SIZE) * this.TILE_SIZE - this.state.camera.x;
+                const startY = Math.floor(this.state.camera.y / this.TILE_SIZE) * this.TILE_SIZE - this.state.camera.y;
+                
+                // Vertical lines
+                for (let x = startX; x < this.canvas.width; x += this.TILE_SIZE) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                // Horizontal lines
+                for (let y = startY; y < this.canvas.height; y += this.TILE_SIZE) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+
+            drawPlayer() {
+                // Draw player circle
+                this.ctx.beginPath();
+                this.ctx.arc(
+                    this.state.player.x - this.state.camera.x,
+                    this.state.player.y - this.state.camera.y,
+                    this.state.player.radius,
+                    0,
+                    Math.PI * 2
+                );
+                this.ctx.fillStyle = this.state.player.color;
+                this.ctx.fill();
+                
+                // Add glow effect
+                this.ctx.beginPath();
+                this.ctx.arc(
+                    this.state.player.x - this.state.camera.x,
+                    this.state.player.y - this.state.camera.y,
+                    this.state.player.radius + 5,
+                    0,
+                    Math.PI * 2
+                );
+                this.ctx.fillStyle = `rgba(${parseInt(this.state.player.color.slice(1, 3), 16)}, ${parseInt(this.state.player.color.slice(3, 5), 16)}, ${parseInt(this.state.player.color.slice(5, 7), 16)}, 0.3)`;
+                this.ctx.fill();
+                
+                // Draw invulnerability effect if applicable
+                const timeSinceLastDamage = Date.now() - this.state.lastDamageTime;
+                if (timeSinceLastDamage < this.DAMAGE_COOLDOWN) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(
+                        this.state.player.x - this.state.camera.x,
+                        this.state.player.y - this.state.camera.y,
+                        this.state.player.radius + 10,
+                        0,
+                        Math.PI * 2
+                    );
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.8 * (1 - timeSinceLastDamage / this.DAMAGE_COOLDOWN)})`;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                }
+                
+                // Draw health bar
+                const healthBarWidth = 50;
+                const healthBarHeight = 5;
+                const healthPercentage = this.state.player.health / this.state.player.maxHealth;
+                
+                // Background (red)
+                this.ctx.fillStyle = 'red';
+                this.ctx.fillRect(
+                    this.state.player.x - this.state.camera.x - healthBarWidth / 2,
+                    this.state.player.y - this.state.camera.y + this.state.player.radius + 10,
+                    healthBarWidth,
+                    healthBarHeight
+                );
+                
+                // Foreground (green)
+                this.ctx.fillStyle = 'green';
+                this.ctx.fillRect(
+                    this.state.player.x - this.state.camera.x - healthBarWidth / 2,
+                    this.state.player.y - this.state.camera.y + this.state.player.radius + 10,
+                    healthBarWidth * healthPercentage,
+                    healthBarHeight
+                );
+            }
+
+            drawEnemies() {
+                for (const enemy of this.state.enemies) {
+                    // Only draw if within viewport
+                    if (
+                        enemy.x + enemy.radius >= this.state.camera.x &&
+                        enemy.x - enemy.radius <= this.state.camera.x + this.canvas.width &&
+                        enemy.y + enemy.radius >= this.state.camera.y &&
+                        enemy.y - enemy.radius <= this.state.camera.y + this.canvas.height
+                    ) {
+                        // Draw enemy circle
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            enemy.x - this.state.camera.x,
+                            enemy.y - this.state.camera.y,
+                            enemy.radius,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = enemy.color;
+                        this.ctx.fill();
+                        
+                        // Draw poison effect if applicable
+                        if (enemy.poisoned) {
+                            this.ctx.beginPath();
+                            this.ctx.arc(
+                                enemy.x - this.state.camera.x,
+                                enemy.y - this.state.camera.y,
+                                enemy.radius + 5,
+                                0,
+                                Math.PI * 2
+                            );
+                            this.ctx.strokeStyle = 'rgba(0, 255, 0, 0.7)';
+                            this.ctx.lineWidth = 2;
+                            this.ctx.stroke();
+                        }
+                        
+                        // Draw health bar if enemy is damaged
+                        if (enemy.health < enemy.maxHealth) {
+                            const healthBarWidth = enemy.radius * 2;
+                            const healthBarHeight = 3;
+                            const healthPercentage = enemy.health / enemy.maxHealth;
+                            
+                            // Background (dark red)
+                            this.ctx.fillStyle = 'rgba(100, 0, 0, 0.7)';
+                            this.ctx.fillRect(
+                                enemy.x - this.state.camera.x - healthBarWidth / 2,
+                                enemy.y - this.state.camera.y - enemy.radius - 8,
+                                healthBarWidth,
+                                healthBarHeight
+                            );
+                            
+                            // Foreground (bright red)
+                            this.ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+                            this.ctx.fillRect(
+                                enemy.x - this.state.camera.x - healthBarWidth / 2,
+                                enemy.y - this.state.camera.y - enemy.radius - 8,
+                                healthBarWidth * healthPercentage,
+                                healthBarHeight
+                            );
+                        }
+                    }
+                }
+            }
+
+            drawPickups() {
+                for (const pickup of this.state.pickups) {
+                    // Only draw if within viewport
+                    if (
+                        pickup.x + pickup.radius >= this.state.camera.x &&
+                        pickup.x - pickup.radius <= this.state.camera.x + this.canvas.width &&
+                        pickup.y + pickup.radius >= this.state.camera.y &&
+                        pickup.y - pickup.radius <= this.state.camera.y + this.canvas.height
+                    ) {
+                        // Draw pickup
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            pickup.x - this.state.camera.x,
+                            pickup.y - this.state.camera.y,
+                            pickup.radius,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = pickup.color;
+                        this.ctx.fill();
+                        
+                        // Add glow effect
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            pickup.x - this.state.camera.x,
+                            pickup.y - this.state.camera.y,
+                            pickup.radius * 1.5,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = `rgba(0, 255, 255, ${0.2 + 0.2 * Math.sin(this.state.gameTime * 5)})`;
+                        this.ctx.fill();
+                    }
+                }
+            }
+
+            drawProjectiles() {
+                for (const projectile of this.state.projectiles) {
+                    // Only draw if within viewport
+                    if (
+                        projectile.x + projectile.radius >= this.state.camera.x &&
+                        projectile.x - projectile.radius <= this.state.camera.x + this.canvas.width &&
+                        projectile.y + projectile.radius >= this.state.camera.y &&
+                        projectile.y - projectile.radius <= this.state.camera.y + this.canvas.height
+                    ) {
+                        // Draw projectile
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            projectile.x - this.state.camera.x,
+                            projectile.y - this.state.camera.y,
+                            projectile.radius,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = projectile.color;
+                        this.ctx.fill();
+                        
+                        // Add glow effect
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            projectile.x - this.state.camera.x,
+                            projectile.y - this.state.camera.y,
+                            projectile.radius * 1.5,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = `rgba(${parseInt(projectile.color.slice(1, 3), 16)}, ${parseInt(projectile.color.slice(3, 5), 16)}, ${parseInt(projectile.color.slice(5, 7), 16)}, 0.3)`;
+                        this.ctx.fill();
+                    }
+                }
+            }
+
+            drawOrbs() {
+                for (const orb of this.state.orbs) {
+                    // Calculate orb position
+                    const x = this.state.player.x + Math.cos(orb.angle) * orb.orbitDistance;
+                    const y = this.state.player.y + Math.sin(orb.angle) * orb.orbitDistance;
+                    
+                    // Only draw if within viewport
+                    if (
+                        x + orb.radius >= this.state.camera.x &&
+                        x - orb.radius <= this.state.camera.x + this.canvas.width &&
+                        y + orb.radius >= this.state.camera.y &&
+                        y - orb.radius <= this.state.camera.y + this.canvas.height
+                    ) {
+                        // Draw orb
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            x - this.state.camera.x,
+                            y - this.state.camera.y,
+                            orb.radius,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = orb.color;
+                        this.ctx.fill();
+                        
+                        // Add glow effect
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            x - this.state.camera.x,
+                            y - this.state.camera.y,
+                            orb.radius * 1.5,
+                            0,
+                            Math.PI * 2
+                        );
+                        this.ctx.fillStyle = `rgba(${parseInt(orb.color.slice(1, 3), 16)}, ${parseInt(orb.color.slice(3, 5), 16)}, ${parseInt(orb.color.slice(5, 7), 16)}, 0.3)`;
+                        this.ctx.fill();
+                        
+                        // Draw connection line to player
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(this.state.player.x - this.state.camera.x, this.state.player.y - this.state.camera.y);
+                        this.ctx.lineTo(x - this.state.camera.x, y - this.state.camera.y);
+                        this.ctx.strokeStyle = `rgba(${parseInt(orb.color.slice(1, 3), 16)}, ${parseInt(orb.color.slice(3, 5), 16)}, ${parseInt(orb.color.slice(5, 7), 16)}, 0.2)`;
+                        this.ctx.lineWidth = 1;
+                        this.ctx.stroke();
+                    }
+                }
+            }
+
+            drawEffects() {
+                for (const effect of this.state.effects) {
+                    if (effect.type === 'whip') {
+                        // Calculate effect parameters
+                        const progress = effect.lifetime / effect.maxLifetime;
+                        const currentRadius = effect.radius * progress;
+                        const alpha = 1 - progress;
+                        
+                        // Calculate attack arc center
+                        const centerX = this.state.player.x + effect.direction.x * (currentRadius / 2);
+                        const centerY = this.state.player.y + effect.direction.y * (currentRadius / 2);
+                        
+                        // Calculate arc start and end angles
+                        const angle = Math.atan2(effect.direction.y, effect.direction.x);
+                        const arcAngle = Math.PI / 2; // 90 degree arc
+                        const startAngle = angle - arcAngle / 2;
+                        const endAngle = angle + arcAngle / 2;
+                        
+                        // Draw attack arc
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            centerX - this.state.camera.x,
+                            centerY - this.state.camera.y,
+                            currentRadius,
+                            startAngle,
+                            endAngle
+                        );
+                        this.ctx.lineTo(centerX - this.state.camera.x, centerY - this.state.camera.y);
+                        
+                        // Gradient fill
+                        const gradient = this.ctx.createRadialGradient(
+                            centerX - this.state.camera.x, centerY - this.state.camera.y, 0,
+                            centerX - this.state.camera.x, centerY - this.state.camera.y, currentRadius
+                        );
+                        gradient.addColorStop(0, `rgba(${parseInt(effect.color.slice(1, 3), 16)}, ${parseInt(effect.color.slice(3, 5), 16)}, ${parseInt(effect.color.slice(5, 7), 16)}, ${alpha * 0.7})`);
+                        gradient.addColorStop(1, `rgba(${parseInt(effect.color.slice(1, 3), 16)}, ${parseInt(effect.color.slice(3, 5), 16)}, ${parseInt(effect.color.slice(5, 7), 16)}, 0)`);
+                        
+                        this.ctx.fillStyle = gradient;
+                        this.ctx.fill();
+                    } else if (effect.type === 'explosion') {
+                        // Calculate explosion parameters
+                        const progress = effect.lifetime / effect.maxLifetime;
+                        const alpha = 1 - progress;
+                        
+                        // Draw explosion circle
+                        this.ctx.beginPath();
+                        this.ctx.arc(
+                            effect.x - this.state.camera.x,
+                            effect.y - this.state.camera.y,
+                            effect.radius,
+                            0,
+                            Math.PI * 2
+                        );
+                        
+                        // Gradient fill
+                        const gradient = this.ctx.createRadialGradient(
+                            effect.x - this.state.camera.x, effect.y - this.state.camera.y, 0,
+                            effect.x - this.state.camera.x, effect.y - this.state.camera.y, effect.radius
+                        );
+                        gradient.addColorStop(0, `rgba(${parseInt(effect.color.slice(1, 3), 16)}, ${parseInt(effect.color.slice(3, 5), 16)}, ${parseInt(effect.color.slice(5, 7), 16)}, ${alpha * 0.7})`);
+                        gradient.addColorStop(1, `rgba(${parseInt(effect.color.slice(1, 3), 16)}, ${parseInt(effect.color.slice(3, 5), 16)}, ${parseInt(effect.color.slice(5, 7), 16)}, 0)`);
+                        
+                        this.ctx.fillStyle = gradient;
+                        this.ctx.fill();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
