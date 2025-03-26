@@ -10,7 +10,7 @@
             padding: 0;
             font-family: 'Roboto Mono', monospace;
             overflow: hidden;
-            background: linear-gradient(270deg, #000, #1a237e, #000, #1a237e, #000);
+            background: linear-gradient(270deg, #333, #666, #999, #666, #333);
             background-size: 2000% 2000%;
             animation: gradientAnimation 30s ease infinite;
             color: #fff;
@@ -38,54 +38,110 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            background: radial-gradient(circle at center, #000000, #1a237e);
             z-index: 1000;
-            animation: menuBackgroundAnimation 10s ease infinite;
+            background: #2f2f2f;
         }
 
-        @keyframes menuBackgroundAnimation {
-            0%, 100% { background: radial-gradient(circle at center, #000000, #1a237e); }
-            50% { background: radial-gradient(circle at center, #1a237e, #000000); }
+        #start-menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(50, 50, 50, 0.8), rgba(20, 20, 20, 1));
+            z-index: -1;
+        }
+
+        .building {
+            position: absolute;
+            bottom: 0;
+            background: #3c2f2f;
+            border: 2px solid #1a0d0d;
+            z-index: 0;
+        }
+
+        .building::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 20%;
+            height: 20%;
+            background: #555;
+            border: 1px solid #333;
+        }
+
+        .building::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 10%;
+            width: 20%;
+            height: 20%;
+            background: #555;
+            border: 1px solid #333;
+        }
+
+        #building1 { left: 10%; width: 100px; height: 200px; }
+        #building2 { left: 25%; width: 80px; height: 250px; }
+        #building3 { left: 40%; width: 120px; height: 180px; }
+        #building4 { right: 20%; width: 90px; height: 230px; }
+
+        .chimney {
+            position: absolute;
+            top: -30px;
+            width: 20px;
+            height: 30px;
+            background: #4a2e2e;
+            border: 2px solid #1a0d0d;
+        }
+
+        #building1 .chimney { left: 60px; }
+        #building2 .chimney { left: 40px; }
+        #building3 .chimney { left: 80px; }
+        #building4 .chimney { left: 50px; }
+
+        .smoke-particle {
+            position: absolute;
+            background: rgba(200, 200, 200, 0.6);
+            border-radius: 50%;
+            animation: smokeRise 5s linear infinite;
+        }
+
+        @keyframes smokeRise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+            100% { transform: translateY(-200px) scale(2); opacity: 0; }
         }
 
         #title {
-            font-size: 3em;
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700;
-            animation: glowTitle 2s ease-in-out infinite, flicker 0.1s infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes glowTitle {
-            0%, 100% { text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700; }
-            50% { text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700, 0 0 70px #FFD700; }
-        }
-
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% {
-                text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFD700, 0 0 60px #FFD700;
-            }
-            20%, 24%, 55% {
-                text-shadow: none;
-            }
+            font-size: 4em;
+            color: #d4a017;
+            text-shadow: 0 0 5px #d4a017, 0 0 10px #d4a017;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 1;
         }
 
         #start-button {
-            padding: 20px 40px;
+            padding: 15px 40px;
             font-size: 1.5em;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #00b7ff;
-            color: #00b7ff;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #d4a017;
+            color: #d4a017;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 20px;
-            position: absolute;
-            bottom: 20px;
+            border-radius: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 1;
         }
 
         #start-button:hover {
-            background: rgba(0, 183, 255, 0.3);
-            box-shadow: 0 0 15px #00b7ff;
+            background: rgba(212, 160, 23, 0.2);
+            box-shadow: 0 0 15px #d4a017;
             transform: scale(1.05);
         }
 
@@ -169,18 +225,9 @@
         }
 
         @keyframes glowPulse {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-                box-shadow: 0 0 20px var(--age-glow-color);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.15);
-                box-shadow: 0 0 40px var(--age-glow-color);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                box-shadow: 0 0 20px var(--age-glow-color);
-            }
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 20px var(--age-glow-color); }
+            50% { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 0 40px var(--age-glow-color); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 20px var(--age-glow-color); }
         }
 
         #score {
@@ -253,6 +300,21 @@
 
         .upgrade.active {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .upgrade-name {
+            display: block;
+        }
+
+        .upgrade-description {
+            display: none;
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #ccc;
+        }
+
+        .upgrade:hover .upgrade-description {
+            display: block;
         }
 
         .orbit {
@@ -506,7 +568,7 @@
 
         #welcomeModal button {
             display: block;
-            margin: 10px auto粉碎;
+            margin: 10px auto;
             padding: 20px 40px;
             font-size: 1.5em;
             border: 1px solid var(--age-glow-color);
@@ -547,7 +609,7 @@
             animation: drift linear infinite;
         }
 
-                @keyframes drift {
+        @keyframes drift {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.5; }
             50% { transform: translateY(-50vh) translateX(30px) scale(1.5); opacity: 0.3; }
             100% { transform: translateY(-100vh) translateX(0) scale(2); opacity: 0; }
@@ -648,17 +710,7 @@
             animation: fadeInOut 5s ease-in-out forwards;
         }
 
-        #resetSave, #closeAchievementModal {
-            margin: 10px;
-            padding: 10px 20px;
-            border: 1px solid var(--age-glow-color);
-            background: transparent;
-            color: var(--age-glow-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        #resetSave:hover, #closeAchievementModal:hover {
+                #resetSave:hover, #closeAchievementModal:hover {
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 10px var(--age-glow-color);
         }
@@ -668,7 +720,11 @@
 <body>
     <div id="start-menu">
         <h1 id="title">Humanity Clicker</h1>
-        <button id="start-button">Praise to the Gods!</button>
+        <div id="building1" class="building"><div class="chimney"></div></div>
+        <div id="building2" class="building"><div class="chimney"></div></div>
+        <div id="building3" class="building"><div class="chimney"></div></div>
+        <div id="building4" class="building"><div class="chimney"></div></div>
+        <button id="start-button">Begin Journey</button>
     </div>
     <div id="game-container">
         <div id="main-game">
@@ -703,7 +759,7 @@
         <p>Click the central area to earn points and buy upgrades to increase your points per click and passive points per second.</p>
         <p>Each era presents dilemmas—some planned, some random—that test your choices. Choose wisely to earn medals and survive!</p>
         <p>Good luck, and may the gods of humanity guide your path!</p>
-        <button id="close-welcome-modal">Praise to the Gods!</button>
+        <button id="close-welcome-modal">Begin Journey</button>
     </div>
     <div id="achievementModal">
         <h2>Achievements</h2>
@@ -737,7 +793,7 @@
         { name: "Upgrade Master", description: "Purchase all upgrades in an era.", unlocked: false },
         { name: "Passive Income", description: "Achieve 100 passive points per second.", unlocked: false },
         { name: "Quick Thinker", description: "Make a choice in a random dilemma within 5 seconds.", unlocked: false },
-        { name: "Survivor", description: "Resolve 10 random dilemmas.", unlocked: false },
+        { name: "Dilemma Master", description: "Resolve 5 random dilemmas.", unlocked: false },
         { name: "Perfect Run", description: "Collect all medals in a single playthrough.", unlocked: false },
         { name: "Speedrunner", description: "Reach the AI Age in under 1 hour.", unlocked: false },
         { name: "True Ending", description: "Achieve the true ending by collecting all medals.", unlocked: false },
@@ -748,10 +804,9 @@
         const scoreElement = document.getElementById("score").querySelector("span");
         scoreElement.textContent = points.toFixed(1);
         if (points > lastPoints) {
+            scoreElement.classList.remove('score-update');
+            void scoreElement.offsetWidth; // Trigger reflow
             scoreElement.classList.add('score-update');
-            setTimeout(() => {
-                scoreElement.classList.remove('score-update');
-            }, 500);
         }
         lastPoints = points;
         const era = eras[currentEra];
@@ -923,7 +978,7 @@
                 },
                 {
                     narrative: "A foreign envoy requests cultural exchange. Do you:",
-                    choices: ["Agree and share knowledge", "Refuse to protect traditions"],
+                    choices: [" Agree and share knowledge", "Refuse to protect traditions"],
                     outcomes: [
                         () => { passivePoints += 5; points -= 500; showAlert("Exchange boosts passive income by 5 but costs 500 points!", 5000); },
                         () => { upgradeClickValue += 3; showAlert("Isolation boosts click value by 3!", 5000); }
@@ -953,7 +1008,7 @@
                     outcomes: [
                         () => { points -= 1000; passivePoints += 10; showAlert("Quarantine costs 1000 points but boosts passive income by 10!", 5000); },
                         () => { resetUpgrades(); showAlert("Faith fails, lose all upgrades!", 5000); }
-                    ]
+                                        ]
                 },
                 {
                     narrative: "Peasants demand land rights. Do you:",
@@ -973,7 +1028,7 @@
                 correct: 0,
                 medalDescription: "Medal of the Renaissance Age - For fostering creativity and innovation."
             },
-                       upgrades: [
+            upgrades: [
                 {name: "Printing Press", cost: 80000, effect: () => upgradeClickValue += 64.0, description: "Inventing the printing press increases points earned on click by 64.0.", color: "#FFD700", size: 20},
                 {name: "Scientific Discovery", cost: 40000, effect: () => { passivePoints += 64.0; updateGlowingText(); setupPassivePoints(); }, description: "Advancing science gains 64.0 points per second.", color: "#FFD700", size: 25},
                 {name: "Art Patronage", cost: 20000, effect: () => upgradeClickValue += baseClickValue * 0.7, description: "Supporting art increases click efficiency by 70%.", color: "#FFD700", size: 30},
@@ -1161,6 +1216,8 @@
     const clickSound = document.getElementById('click-sound');
     const upgradeSound = document.getElementById('upgrade-sound');
     const eraSound = document.getElementById('era-sound');
+    const achievementModal = document.getElementById('achievementModal');
+    const achievementList = document.getElementById('achievementList');
 
     startButton.addEventListener('click', () => {
         startMenu.style.display = 'none';
@@ -1168,13 +1225,32 @@
         loadGame();
         updateEra();
         welcomeModal.style.display = 'block';
+        addSmokeToTitle();
     });
 
     closeWelcomeModalBtn.addEventListener('click', () => {
         welcomeModal.style.display = 'none';
     });
 
-    function updateEra() {
+    function addSmokeToTitle() {
+        const buildings = document.querySelectorAll('.building');
+        buildings.forEach(building => {
+            setInterval(() => {
+                const chimney = building.querySelector('.chimney');
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke-particle';
+                smoke.style.left = `${chimney.offsetLeft + 10}px`;
+                smoke.style.top = `${chimney.offsetTop - 10}px`;
+                smoke.style.width = `${Math.random() * 15 + 10}px`;
+                smoke.style.height = smoke.style.width;
+                smoke.style.animationDuration = `${Math.random() * 2 + 3}s`;
+                building.appendChild(smoke);
+                setTimeout(() => building.removeChild(smoke), 5000);
+            }, 1000);
+        });
+    }
+
+      function updateEra() {
         const era = eras[currentEra];
         const background = document.getElementById('background');
         background.style.background = era.gradient;
@@ -1212,9 +1288,19 @@
         era.upgrades.forEach((upgrade, index) => {
             const upgradeElement = document.createElement('div');
             upgradeElement.className = 'upgrade';
-            upgradeElement.textContent = `${upgrade.name} - ${upgrade.cost} Points`;
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'upgrade-name';
+            nameSpan.textContent = `${upgrade.name} - ${upgrade.cost} Points`;
+
+            const descSpan = document.createElement('span');
+            descSpan.className = 'upgrade-description';
+            descSpan.textContent = upgrade.description;
+
+            upgradeElement.appendChild(nameSpan);
+            upgradeElement.appendChild(descSpan);
+
             upgradeElement.setAttribute('data-cost', upgrade.cost);
-            upgradeElement.setAttribute('data-description', upgrade.description);
             upgradeElement.style.setProperty('--orbit-color', upgrade.color);
             upgradeElement.style.setProperty('--orbit-radius', `${120 + index * 20}px`);
             upgradeElement.addEventListener('click', () => {
@@ -1270,10 +1356,9 @@
             }, 5000);
             saveGame();
 
-            // Check for Achievement Hunter
             const allOthersUnlocked = achievements.slice(0, -1).every(ach => ach.unlocked);
             if (allOthersUnlocked && index !== achievements.length - 1) {
-                unlockAchievement(achievements.length - 1); // Unlock Achievement Hunter
+                unlockAchievement(achievements.length - 1); // Achievement Hunter
             }
         }
     }
@@ -1531,7 +1616,7 @@
         }
     }
 
-        function removeSmoke() {
+    function removeSmoke() {
         const background = document.getElementById('background');
         const smokeParticles = document.querySelectorAll('.smoke');
 
@@ -1552,7 +1637,7 @@
             } else {
                 clearInterval(dilemmaInterval);
             }
-        }, Math.random() * 30000 + 30000); // 30 to 60 seconds
+        }, Math.random() * 30000 + 15000); // 15 to 45 seconds
     }
 
     function showRandomDilemma(dilemma) {
@@ -1572,7 +1657,7 @@
             updateScore();
             setupPassivePoints();
             dilemmasResolved++;
-            if (dilemmasResolved >= 10) unlockAchievement(6); // Survivor
+            if (dilemmasResolved >= 5) unlockAchievement(6); // Dilemma Master
         };
         choice2.onclick = () => {
             const timeElapsed = (Date.now() - dilemmaStartTime) / 1000;
@@ -1583,7 +1668,7 @@
             updateScore();
             setupPassivePoints();
             dilemmasResolved++;
-            if (dilemmasResolved >= 10) unlockAchievement(6); // Survivor
+            if (dilemmasResolved >= 5) unlockAchievement(6); // Dilemma Master
         };
     }
 
@@ -1613,7 +1698,7 @@
         setTimeout(() => mainGame.removeChild(clickGlowingText), 800);
     });
 
-    nextEraBtn.addEventListener('click', () => {
+        nextEraBtn.addEventListener('click', () => {
         if (currentEra < eras.length - 1) {
             if (points >= eras[currentEra].advanceCost) {
                 showChoice();
@@ -1643,7 +1728,7 @@
         localStorage.setItem('humanityClickerSave', JSON.stringify(gameState));
     }
 
-        function loadGame() {
+    function loadGame() {
         const savedState = localStorage.getItem('humanityClickerSave');
         if (savedState) {
             const gameState = JSON.parse(savedState);
