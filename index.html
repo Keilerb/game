@@ -194,7 +194,6 @@
 
         #score span {
             display: inline-block;
-            animation: bounce 0.3s ease-out;
         }
 
         @keyframes bounce {
@@ -212,6 +211,10 @@
             50% { color: #ff0000; }
         }
 
+        .score-update {
+            animation: bounce 0.3s ease-out, flashGreen 0.5s ease-in-out;
+        }
+
         #upgrade-panel {
             width: 300px;
             background: rgba(0, 0, 0, 0.7);
@@ -225,6 +228,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             height: 400px;
             overflow-y: hidden;
         }
@@ -251,27 +255,6 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .upgrade::after {
-            content: attr(data-description);
-            position: absolute;
-            left: 50%;
-            top: -50%;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px;
-            width: 200px;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 0 10px var(--age-glow-color);
-            white-space: normal;
-            word-wrap: break-word;
-            transform: translate(-50%, -100%);
-        }
-
-        .upgrade:hover::after {
-            display: block;
-        }
-
         .orbit {
             position: absolute;
             border-radius: 50%;
@@ -290,16 +273,16 @@
         #alert {
             display: none;
             position: absolute;
-            top: 0;
+            top: 20px;
             left: 50%;
-            transform: translate(-50%, 0);
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: white;
             padding: 20px;
             border-radius: 10px;
             z-index: 100;
             text-align: center;
-            animation: slideDown 3s ease-in-out, shake 0.5s ease-in-out;
+            animation: fadeInOut 5s ease-in-out forwards;
             box-shadow: 0 0 15px var(--age-glow-color);
         }
 
@@ -313,18 +296,11 @@
             color: #ff0000;
         }
 
-        @keyframes slideDown {
-            0% { transform: translate(-50%, -100%); opacity: 0; }
-            10% { transform: translate(-50%, 0); opacity: 1; }
-            90% { transform: translate(-50%, 0); opacity: 1; }
-            100% { transform: translate(-50%, -100%); opacity: 0; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translate(-50%, 0) translateX(0); }
-            25% { transform: translate(-50%, 0) translateX(-5px); }
-            50% { transform: translate(-50%, 0) translateX(5px); }
-            75% { transform: translate(-50%, 0) translateX(-5px); }
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
         #era-controls {
@@ -440,24 +416,6 @@
             position: relative;
         }
 
-        .medal::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 100%;
-            top: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px;
-            width: 200px;
-            display: none;
-            z-index: 10;
-            box-shadow: 0 0 10px var(--medal-color);
-        }
-
-        .medal:hover::after {
-            display: block;
-        }
-
         @keyframes glow {
             0%, 100% { box-shadow: 0 0 10px var(--medal-color); }
             50% { box-shadow: 0 0 20px var(--medal-color); }
@@ -474,13 +432,6 @@
             padding: 20px;
             z-index: 1001;
             animation: fadeInOut 2s ease-in-out forwards;
-        }
-
-        @keyframes fadeInOut {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { opacity: 0; }
         }
 
         #era-title {
@@ -555,7 +506,7 @@
 
         #welcomeModal button {
             display: block;
-            margin: 10px auto;
+            margin: 10px auto粉碎;
             padding: 20px 40px;
             font-size: 1.5em;
             border: 1px solid var(--age-glow-color);
@@ -596,7 +547,7 @@
             animation: drift linear infinite;
         }
 
-        @keyframes drift {
+                @keyframes drift {
             0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.5; }
             50% { transform: translateY(-50vh) translateX(30px) scale(1.5); opacity: 0.3; }
             100% { transform: translateY(-100vh) translateX(0) scale(2); opacity: 0; }
@@ -629,16 +580,24 @@
             padding: 20px;
             border: 2px solid var(--age-glow-color);
             z-index: 1000;
-            text-align: center;
+            text-align: left;
             color: var(--age-glow-color);
             max-height: 80vh;
             overflow-y: auto;
+            width: 500px;
         }
 
         #achievementList {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .achievement-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            width: 100%;
         }
 
         .achievement {
@@ -647,46 +606,46 @@
             background: #333;
             border: 2px solid #FFD700;
             border-radius: 50%;
-            margin: 5px;
-            display: inline-block;
-            position: relative;
+            margin-right: 10px;
+            flex-shrink: 0;
         }
 
         .achievement.unlocked {
             background: #FFD700;
         }
 
-        .achievement::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 100%;
-            top: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px;
-            width: 200px;
-            display: none;
-            z-index: 10;
-            box-shadow: 0 0 10px #FFD700;
+        .rainbow-medal {
+            background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 1400% 1400%;
+            animation: rainbowAnimation 10s ease infinite;
         }
 
-        .achievement:hover::after {
-            display: block;
+        @keyframes rainbowAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .achievement-description {
+            color: white;
+            font-size: 0.9em;
+            max-width: 400px;
+            word-wrap: break-word;
         }
 
         #achievementPopup {
             display: none;
-            position: absolute;
-            top: 20px;
+            position: fixed;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.8);
             color: #FFD700;
             padding: 10px 20px;
             border-radius: 5px;
             z-index: 100;
             text-align: center;
-            animation: slideDown 3s ease-in-out;
+            animation: fadeInOut 5s ease-in-out forwards;
         }
 
         #resetSave, #closeAchievementModal {
@@ -757,976 +716,1005 @@
     <audio id="era-sound" src="era.mp3"></audio>
 
     <script>
-        let points = 0.0;
-        let baseClickValue = 1.0;
-        let upgradeClickValue = 0.0;
-        let currentEra = 0;
-        let medals = [];
-        let passivePoints = 0.0;
-        let passiveInterval = null;
-        let dilemmaInterval = null;
-        let shownDilemmas = new Set();
-        let gameStartTime = Date.now();
-        let dilemmaStartTime;
+    let points = 0.0;
+    let baseClickValue = 1.0;
+    let upgradeClickValue = 0.0;
+    let currentEra = 0;
+    let medals = [];
+    let passivePoints = 0.0;
+    let passiveInterval = null;
+    let dilemmaInterval = null;
+    let shownDilemmas = new Set();
+    let gameStartTime = Date.now();
+    let dilemmaStartTime;
+    let dilemmasResolved = 0;
+    let lastPoints = 0;
 
-        const achievements = [
-            { name: "First Steps", description: "Advance to the Bronze Age.", unlocked: false },
-            { name: "Medal Collector", description: "Collect your first medal.", unlocked: false },
-            { name: "Point Hoarder", description: "Accumulate 10,000 points in a single era.", unlocked: false },
-            { name: "Upgrade Master", description: "Purchase all upgrades in an era.", unlocked: false },
-            { name: "Passive Income", description: "Achieve 100 passive points per second.", unlocked: false },
-            { name: "Quick Thinker", description: "Make a choice in a random dilemma within 5 seconds.", unlocked: false },
-            { name: "Era Skipper", description: "Skip an era.", unlocked: false },
-            { name: "Perfect Run", description: "Collect all medals in a single playthrough.", unlocked: false },
-            { name: "Speedrunner", description: "Reach the AI Age in under 1 hour.", unlocked: false },
-            { name: "True Ending", description: "Achieve the true ending by collecting all medals.", unlocked: false }
-        ];
+    const achievements = [
+        { name: "First Steps", description: "Advance to the Bronze Age.", unlocked: false },
+        { name: "Medal Collector", description: "Collect your first medal.", unlocked: false },
+        { name: "Point Hoarder", description: "Accumulate 10,000 points in a single era.", unlocked: false },
+        { name: "Upgrade Master", description: "Purchase all upgrades in an era.", unlocked: false },
+        { name: "Passive Income", description: "Achieve 100 passive points per second.", unlocked: false },
+        { name: "Quick Thinker", description: "Make a choice in a random dilemma within 5 seconds.", unlocked: false },
+        { name: "Survivor", description: "Resolve 10 random dilemmas.", unlocked: false },
+        { name: "Perfect Run", description: "Collect all medals in a single playthrough.", unlocked: false },
+        { name: "Speedrunner", description: "Reach the AI Age in under 1 hour.", unlocked: false },
+        { name: "True Ending", description: "Achieve the true ending by collecting all medals.", unlocked: false },
+        { name: "Achievement Hunter", description: "Collect all other achievements.", unlocked: false }
+    ];
 
-        function updateScore(isPassive = false) {
-            const scoreElement = document.getElementById("score").querySelector("span");
-            scoreElement.textContent = points.toFixed(1);
-            if (isPassive) {
-                scoreElement.style.animation = "flashGreen 0.5s ease-in-out";
-                scoreElement.addEventListener("animationend", () => {
-                    scoreElement.style.animation = "";
-                }, { once: true });
-            }
-            const era = eras[currentEra];
-            const progress = (points / era.advanceCost) * 100;
-            document.getElementById('progress-fill').style.width = `${Math.min(progress, 100)}%`;
-            if (points >= 10000) unlockAchievement(2); // Point Hoarder
-            if (passivePoints >= 100) unlockAchievement(4); // Passive Income
+    function updateScore() {
+        const scoreElement = document.getElementById("score").querySelector("span");
+        scoreElement.textContent = points.toFixed(1);
+        if (points > lastPoints) {
+            scoreElement.classList.add('score-update');
+            setTimeout(() => {
+                scoreElement.classList.remove('score-update');
+            }, 500);
+        }
+        lastPoints = points;
+        const era = eras[currentEra];
+        const progress = (points / era.advanceCost) * 100;
+        document.getElementById('progress-fill').style.width = `${Math.min(progress, 100)}%`;
+        if (points >= 10000) unlockAchievement(2); // Point Hoarder
+        if (passivePoints >= 100) unlockAchievement(4); // Passive Income
+    }
+
+    function updateGlowingText() {
+        if (passivePoints > 0) {
+            const glowingText = document.querySelector(".glowing-text");
+            glowingText.textContent = `+${passivePoints.toFixed(1)}/s`;
+            glowingText.style.animation = "fadeOut 1s ease-out forwards, moveUp 1s ease-out forwards";
+            setTimeout(() => {
+                glowingText.style.animation = "";
+            }, 1000);
+        }
+    }
+
+    function setupPassivePoints() {
+        if (passivePoints > 0) {
+            if (passiveInterval) clearInterval(passiveInterval);
+            passiveInterval = setInterval(() => {
+                points += passivePoints;
+                updateScore();
+                updateGlowingText();
+            }, 1000);
+        }
+    }
+
+    function resetUpgrades() {
+        const upgrades = document.querySelectorAll('.upgrade');
+        upgrades.forEach(upgrade => upgrade.classList.remove('active'));
+        upgradeClickValue = 0.0;
+        passivePoints = 0.0;
+        if (passiveInterval) {
+            clearInterval(passiveInterval);
+            passiveInterval = null;
+        }
+    }
+
+    const eras = [
+        {
+            name: "Stone Age", color: "#8B4513", glow: "#FFA07A", medalColor: "#8B4513", advanceCost: 250,
+            dilemma: {
+                narrative: "The winter is harsh, and food is scarce. You've located a herd of wild animals. Do you:",
+                choices: ["Attempt to domesticate them for future stability", "Hunt them all for immediate survival"],
+                correct: 0,
+                medalDescription: "Medal of the Stone Age - For showing foresight by domesticating animals."
+            },
+            upgrades: [
+                {name: "Animal Domestication", cost: 100, effect: () => upgradeClickValue += 2.0, description: "Domesticating animals provides a stable food source, increasing points earned on click by 2.0.", color: "#654321", size: 20},
+                {name: "Fire Mastery", cost: 50, effect: () => { passivePoints += 2.0; updateGlowingText(); setupPassivePoints(); }, description: "Mastering fire provides warmth and protection, gaining 2.0 points per second.", color: "#DAA520", size: 25},
+                {name: "Stone Tools", cost: 10, effect: () => upgradeClickValue += baseClickValue * 0.2, description: "Crafting stone tools improves efficiency, increasing click efficiency by 20%.", color: "#704214", size: 30},
+            ],
+            description: "Harsh winters and predators force adaptation.",
+            gradient: "linear-gradient(270deg, #8B4513, #FFA07A, #8B4513, #FFA07A, #8B4513)",
+            randomDilemmas: [
+                {
+                    narrative: "A neighboring tribe demands all your stone and tools! Do you:",
+                    choices: ["Hand them over to avoid conflict", "Refuse and defend your resources"],
+                    outcomes: [
+                        () => { points -= 50; upgradeClickValue += 1; showAlert("You lose 50 points but gain +1 click value!", 5000); },
+                        () => { passivePoints += 1; points -= 100; showAlert("You defend successfully but lose 100 points, gaining +1 passive point!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A sudden storm destroys your shelters. Do you:",
+                    choices: ["Rebuild stronger with stone", "Move to a new area"],
+                    outcomes: [
+                        () => { points -= 20; upgradeClickValue += 1; showAlert("Costs 20 points but clicks are worth +1!", 5000); },
+                        () => { passivePoints -= 1; showAlert("Lose 1 passive point per second from disruption.", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Bronze Age", color: "#CD7F32", glow: "#FF8C00", medalColor: "#CD7F32", advanceCost: 1500,
+            dilemma: {
+                narrative: "Your tribe has discovered a new metal. Do you:",
+                choices: ["Use it for weapons to conquer neighboring tribes", "Use it for tools to improve farming"],
+                correct: 1,
+                medalDescription: "Medal of the Bronze Age - For choosing peace and prosperity over war."
+            },
+            upgrades: [
+                {name: "Trade Routes", cost: 800, effect: () => upgradeClickValue += 4.0, description: "Establishing trade routes increases points earned on click by 4.0.", color: "#CD853F", size: 20},
+                {name: "Irrigation Systems", cost: 400, effect: () => { passivePoints += 4.0; updateGlowingText(); setupPassivePoints(); }, description: "Building irrigation systems gains 4.0 points per second.", color: "#D2691E", size: 25},
+                {name: "Bronze Swords", cost: 200, effect: () => upgradeClickValue += baseClickValue * 0.3, description: "Forging bronze swords increases click efficiency by 30%.", color: "#B22222", size: 30},
+            ],
+            description: "Metallurgy brings new tools and weapons.",
+            gradient: "linear-gradient(270deg, #CD7F32, #FF8C00, #CD7F32, #FF8C00, #CD7F32)",
+            randomDilemmas: [
+                {
+                    narrative: "Bandits raid your trade routes! Do you:",
+                    choices: ["Pay them off with bronze", "Fight them off"],
+                    outcomes: [
+                        () => { points -= 100; passivePoints += 2; showAlert("You lose 100 points but gain +2 passive points!", 5000); },
+                        () => { upgradeClickValue -= 2; points += 50; showAlert("You lose 2 click value but gain 50 points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A rival city offers a trade alliance. Do you:",
+                    choices: ["Accept and share technologies", "Decline and focus on self-sufficiency"],
+                    outcomes: [
+                        () => { passivePoints += 3; points -= 200; showAlert("Alliance boosts passive income by 3 but costs 200 points!", 5000); },
+                        () => { upgradeClickValue += 2; showAlert("Self-reliance boosts click value by 2!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Iron Age", color: "#A9A9A9", glow: "#C0C0C0", medalColor: "#A9A9A9", advanceCost: 3000,
+            dilemma: {
+                narrative: "Your kingdom is threatened by invaders. Do you:",
+                choices: ["Fortify your defenses and prepare for a siege", "Launch a preemptive strike"],
+                correct: 0,
+                medalDescription: "Medal of the Iron Age - For prioritizing defense and strategy."
+            },
+            upgrades: [
+                {name: "Fortifications", cost: 4000, effect: () => upgradeClickValue += 8.0, description: "Building fortifications increases points earned on click by 8.0.", color: "#808080", size: 20},
+                {name: "Advanced Farming", cost: 2000, effect: () => { passivePoints += 8.0; updateGlowingText(); setupPassivePoints(); }, description: "Advancing farming gains 8.0 points per second.", color: "#A9A9A9", size: 25},
+                {name: "Iron Swords", cost: 1000, effect: () => upgradeClickValue += baseClickValue * 0.4, description: "Forging iron swords increases click efficiency by 40%.", color: "#696969", size: 30},
+            ],
+            description: "Stronger tools and weapons lead to powerful empires.",
+            gradient: "linear-gradient(270deg, #A9A9A9, #C0C0C0, #A9A9A9, #C0C0C0, #A9A9A9)",
+            randomDilemmas: [
+                {
+                    narrative: "A rival kingdom offers an alliance. Do you:",
+                    choices: ["Accept and share resources", "Reject and prepare for war"],
+                    outcomes: [
+                        () => { passivePoints += 2; points -= 200; showAlert("Alliance boosts passive income by 2 but costs 200 points!", 5000); },
+                        () => { upgradeClickValue += 3; points -= 500; showAlert("War prep boosts click value by 3 but costs 500 points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A famine strikes your lands. Do you:",
+                    choices: ["Ration food strictly", "Seek aid from neighbors"],
+                    outcomes: [
+                        () => { points -= 150; upgradeClickValue += 2; showAlert("Rationing costs 150 points but boosts click value by 2!", 5000); },
+                        () => { passivePoints -= 1; showAlert("Dependency reduces passive income by 1!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Classical Age", color: "#ADD8E6", glow: "#FFDAB9", medalColor: "#FFFACD", advanceCost: 6000,
+            dilemma: {
+                narrative: "Your empire is at its peak. Do you:",
+                choices: ["Focus on cultural advancements and education", "Expand your territory through military conquest"],
+                correct: 0,
+                medalDescription: "Medal of the Classical Age - For valuing knowledge and cultural growth."
+            },
+            upgrades: [
+                {name: "Literature", cost: 8000, effect: () => upgradeClickValue += 16.0, description: "Promoting literature increases points earned on click by 16.0.", color: "#FFFACD", size: 20},
+                {name: "Architecture", cost: 4000, effect: () => { passivePoints += 16.0; updateGlowingText(); setupPassivePoints(); }, description: "Developing architecture gains 16.0 points per second.", color: "#EEE8AA", size: 25},
+                {name: "Philosophy", cost: 2000, effect: () => upgradeClickValue += baseClickValue * 0.5, description: "Studying philosophy increases click efficiency by 50%.", color: "#FFF8DC", size: 30},
+            ],
+            description: "Cultural advancements and knowledge lead to a golden age.",
+            gradient: "linear-gradient(270deg, #ADD8E6, #FFDAB9, #ADD8E6, #FFDAB9, #ADD8E6)",
+            randomDilemmas: [
+                {
+                    narrative: "A philosopher proposes a radical idea. Do you:",
+                    choices: ["Fund their research", "Banish them for heresy"],
+                    outcomes: [
+                        () => { upgradeClickValue += 5; points -= 1000; showAlert("New ideas boost click value by 5 but cost 1000 points!", 5000); },
+                        () => { passivePoints -= 5; showAlert("Fear stifles progress, lose 5 passive points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A foreign envoy requests cultural exchange. Do you:",
+                    choices: ["Agree and share knowledge", "Refuse to protect traditions"],
+                    outcomes: [
+                        () => { passivePoints += 5; points -= 500; showAlert("Exchange boosts passive income by 5 but costs 500 points!", 5000); },
+                        () => { upgradeClickValue += 3; showAlert("Isolation boosts click value by 3!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Medieval Age", color: "#8A2BE2", glow: "#9370DB", medalColor: "#8A2BE2", advanceCost: 12000,
+            dilemma: {
+                narrative: "Your kingdom faces internal strife. Do you:",
+                choices: ["Implement reforms to address grievances", "Suppress the rebellion with force"],
+                correct: 0,
+                medalDescription: "Medal of the Medieval Age - For addressing the needs of your people."
+            },
+            upgrades: [
+                {name: "Feudal System", cost: 40000, effect: () => upgradeClickValue += 32.0, description: "Implementing a feudal system increases points earned on click by 32.0.", color: "#9370DB", size: 20},
+                {name: "Castles", cost: 20000, effect: () => { passivePoints += 32.0; updateGlowingText(); setupPassivePoints(); }, description: "Building castles gains 32.0 points per second.", color: "#8A2BE2", size: 25},
+                {name: "Knighthood", cost: 10000, effect: () => upgradeClickValue += baseClickValue * 0.6, description: "Establishing knighthood increases click efficiency by 60%.", color: "#9932CC", size: 30},
+            ],
+            description: "Feudal system, castles, and strife define this era.",
+            gradient: "linear-gradient(270deg, #8A2BE2, #9370DB, #8A2BE2, #9370DB, #8A2BE2)",
+            randomDilemmas: [
+                {
+                    narrative: "A plague spreads through your lands. Do you:",
+                    choices: ["Quarantine the sick", "Pray for divine intervention"],
+                    outcomes: [
+                        () => { points -= 1000; passivePoints += 10; showAlert("Quarantine costs 1000 points but boosts passive income by 10!", 5000); },
+                        () => { resetUpgrades(); showAlert("Faith fails, lose all upgrades!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "Peasants demand land rights. Do you:",
+                    choices: ["Grant limited rights", "Crush their uprising"],
+                    outcomes: [
+                        () => { passivePoints += 8; points -= 1500; showAlert("Rights boost passive income by 8 but cost 1500 points!", 5000); },
+                        () => { upgradeClickValue -= 5; showAlert("Force reduces click value by 5!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Renaissance Age", color: "#FFDAB9", glow: "#FFD700", medalColor: "#FFD700", advanceCost: 24000,
+            dilemma: {
+                narrative: "A new era of enlightenment is upon you. Do you:",
+                choices: ["Support the arts and sciences", "Focus on military expansion"],
+                correct: 0,
+                medalDescription: "Medal of the Renaissance Age - For fostering creativity and innovation."
+            },
+                       upgrades: [
+                {name: "Printing Press", cost: 80000, effect: () => upgradeClickValue += 64.0, description: "Inventing the printing press increases points earned on click by 64.0.", color: "#FFD700", size: 20},
+                {name: "Scientific Discovery", cost: 40000, effect: () => { passivePoints += 64.0; updateGlowingText(); setupPassivePoints(); }, description: "Advancing science gains 64.0 points per second.", color: "#FFD700", size: 25},
+                {name: "Art Patronage", cost: 20000, effect: () => upgradeClickValue += baseClickValue * 0.7, description: "Supporting art increases click efficiency by 70%.", color: "#FFD700", size: 30},
+            ],
+            description: "Arts and sciences flourish.",
+            gradient: "linear-gradient(270deg, #FFDAB9, #FFD700, #FFDAB9, #FFD700, #FFDAB9)",
+            randomDilemmas: [
+                {
+                    narrative: "An artist seeks patronage for a masterpiece. Do you:",
+                    choices: ["Fund the project", "Reject it as frivolous"],
+                    outcomes: [
+                        () => { points -= 5000; upgradeClickValue += 20; showAlert("Costs 5000 points but boosts click value by 20!", 5000); },
+                        () => { passivePoints -= 10; showAlert("Creativity wanes, lose 10 passive points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A scientist invents a new device. Do you:",
+                    choices: ["Invest in its development", "Ban it as dangerous"],
+                    outcomes: [
+                        () => { passivePoints += 15; points -= 3000; showAlert("Innovation boosts passive income by 15 but costs 3000 points!", 5000); },
+                        () => { upgradeClickValue -= 10; showAlert("Fear halts progress, lose 10 click value!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Industrial Age", color: "#808080", glow: "#A9A9A9", medalColor: "#808080", advanceCost: 48000,
+            dilemma: {
+                narrative: "Industrialization is changing the world. Do you:",
+                choices: ["Invest in factories and infrastructure", "Focus on worker rights and conditions"],
+                correct: 1,
+                medalDescription: "Medal of the Industrial Age - For prioritizing worker well-being."
+            },
+            upgrades: [
+                {name: "Labor Laws", cost: 200000, effect: () => upgradeClickValue += 128.0, description: "Implementing labor laws increases points earned on click by 128.0.", color: "#808080", size: 20},
+                {name: "Railways", cost: 100000, effect: () => { passivePoints += 128.0; updateGlowingText(); setupPassivePoints(); }, description: "Building railways gains 128.0 points per second.", color: "#A9A9A9", size: 25},
+                {name: "Factories", cost: 50000, effect: () => upgradeClickValue += baseClickValue * 0.8, description: "Improving factories increases click efficiency by 80%.", color: "#696969", size: 30},
+            ],
+            description: "Industrialization and urbanization transform society.",
+            gradient: "linear-gradient(270deg, #808080, #A9A9A9, #808080, #A9A9A9, #808080)",
+            randomDilemmas: [
+                {
+                    narrative: "A factory explosion disrupts production. Do you:",
+                    choices: ["Rebuild immediately", "Investigate the cause"],
+                    outcomes: [
+                        () => { points -= 10000; passivePoints += 50; showAlert("Costs 10000 points but boosts passive income by 50!", 5000); },
+                        () => { resetUpgrades(); showAlert("Delay reveals sabotage, lose all upgrades!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "Workers strike for better wages. Do you:",
+                    choices: ["Negotiate a raise", "Replace them with machines"],
+                    outcomes: [
+                        () => { passivePoints += 30; points -= 8000; showAlert("Raises boost passive income by 30 but cost 8000 points!", 5000); },
+                        () => { upgradeClickValue += 40; points -= 2000; showAlert("Machines boost click value by 40 but cost 2000 points!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Modern Age", color: "#008000", glow: "#00FF00", medalColor: "#008000", advanceCost: 96000,
+            dilemma: {
+                narrative: "Technology is advancing rapidly. Do you:",
+                choices: ["Invest in renewable energy sources", "Focus on space exploration"],
+                correct: 0,
+                medalDescription: "Medal of the Modern Age - For promoting sustainable energy."
+            },
+            upgrades: [
+                {name: "Globalization", cost: 400000, effect: () => upgradeClickValue += 256.0, description: "Promoting globalization increases points earned on click by 256.0.", color: "#008000", size: 20},
+                {name: "Internet", cost: 200000, effect: () => { passivePoints += 256.0; updateGlowingText(); setupPassivePoints(); }, description: "Developing the internet gains 256.0 points per second.", color: "#00FF00", size: 25},
+                {name: "Renewable Energy", cost: 100000, effect: () => upgradeClickValue += baseClickValue * 0.9, description: "Investing in renewables increases click efficiency by 90%.", color: "#008000", size: 30},
+            ],
+            description: "Technology, globalization, and sustainability define this era.",
+            gradient: "linear-gradient(270deg, #008000, #00FF00, #008000, #00FF00, #008000)",
+            randomDilemmas: [
+                {
+                    narrative: "A cyberattack threatens your networks. Do you:",
+                    choices: ["Pay the ransom", "Hire experts to fight back"],
+                    outcomes: [
+                        () => { points -= 20000; showAlert("Lose 20000 points to the hackers!", 5000); },
+                        () => { passivePoints += 100; points -= 5000; showAlert("Victory boosts passive income by 100 but costs 5000 points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A climate crisis looms. Do you:",
+                    choices: ["Invest in green tech", "Ignore it for short-term gains"],
+                    outcomes: [
+                        () => { passivePoints += 80; points -= 15000; showAlert("Green tech boosts passive income by 80 but costs 15000 points!", 5000); },
+                        () => { upgradeClickValue -= 50; showAlert("Neglect reduces click value by 50!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Information Age", color: "#0000FF", glow: "#1E90FF", medalColor: "#0000FF", advanceCost: 192000,
+            dilemma: {
+                narrative: "Information is power. Do you:",
+                choices: ["Promote free and open information", "Control and censor information"],
+                correct: 0,
+                medalDescription: "Medal of the Information Age - For championing open knowledge."
+            },
+            upgrades: [
+                {name: "Data Centers", cost: 800000, effect: () => upgradeClickValue += 512.0, description: "Building data centers increases points earned on click by 512.0.", color: "#0000FF", size: 20},
+                {name: "Cybersecurity", cost: 400000, effect: () => { passivePoints += 512.0; updateGlowingText(); setupPassivePoints(); }, description: "Enhancing cybersecurity gains 512.0 points per second.", color: "#1E90FF", size: 25},
+                {name: "Social Media", cost: 200000, effect: () => upgradeClickValue += baseClickValue * 1.0, description: "Developing social media increases click efficiency by 100%.", color: "#4169E1", size: 30},
+            ],
+            description: "Digital networks and information dominate.",
+            gradient: "linear-gradient(270deg, #0000FF, #1E90FF, #0000FF, #1E90FF, #0000FF)",
+            randomDilemmas: [
+                {
+                    narrative: "A data breach exposes secrets. Do you:",
+                    choices: ["Patch it quietly", "Go public and fix it"],
+                    outcomes: [
+                        () => { points -= 30000; upgradeClickValue += 100; showAlert("Costs 30000 points but boosts click value by 100!", 5000); },
+                        () => { passivePoints += 150; points -= 10000; showAlert("Transparency boosts passive income by 150 but costs 10000 points!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A viral rumor spreads online. Do you:",
+                    choices: ["Censor it", "Counter with truth"],
+                    outcomes: [
+                        () => { upgradeClickValue -= 80; showAlert("Censorship reduces click value by 80!", 5000); },
+                        () => { passivePoints += 120; points -= 5000; showAlert("Truth boosts passive income by 120 but costs 5000 points!", 5000); }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "AI Age", color: "#000000", glow: "#FF4500", medalColor: "#FF0000", advanceCost: 384000,
+            dilemma: {
+                narrative: "AI has reached a critical point. Do you:",
+                choices: ["Implement strict controls on AI", "Allow AI autonomy to solve global issues"],
+                correct: 1,
+                medalDescription: "Medal of the AI Age - For embracing AI's potential."
+            },
+            upgrades: [
+                {name: "Automated Society", cost: 1600000, effect: () => upgradeClickValue += 1024.0, description: "Automation increases points earned on click by 1024.0.", color: "#FF4500", size: 20},
+                {name: "Quantum Computing", cost: 800000, effect: () => { passivePoints += 1024.0; updateGlowingText(); setupPassivePoints(); }, description: "Quantum computing gains 1024.0 points per second.", color: "#FF6347", size: 25},
+                {name: "Neural Network", cost: 400000, effect: () => upgradeClickValue += baseClickValue * 1.1, description: "Neural networks increase click efficiency by 110%.", color: "#DC143C", size: 30},
+            ],
+            description: "AI's potential defines this era.",
+            gradient: "linear-gradient(270deg, #000000, #FF4500, #000000, #FF4500, #000000)",
+            randomDilemmas: [
+                {
+                    narrative: "An AI glitch threatens your systems! Do you:",
+                    choices: ["Shut it down temporarily", "Let it self-correct"],
+                    outcomes: [
+                        () => { passivePoints -= 500; showAlert("Lose 500 passive points per second!", 5000); },
+                        () => { points += 10000; resetUpgrades(); showAlert("AI fixes itself, grants 10,000 points but resets upgrades!", 5000); }
+                    ]
+                },
+                {
+                    narrative: "A rogue AI offers to optimize your society. Do you:",
+                    choices: ["Accept its help", "Destroy it to retain control"],
+                    outcomes: [
+                        () => { passivePoints += 300; points -= 20000; showAlert("Gain 300 passive points but lose 20000 points!", 5000); },
+                        () => { upgradeClickValue += 200; showAlert("Control retained, gain 200 click value!", 5000); }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    const mainGame = document.getElementById('main-game');
+    const clickArea = document.getElementById('click-area');
+    const scoreDisplay = document.getElementById('score');
+    const upgradePanel = document.getElementById('upgrades');
+    const eraTitle = document.getElementById('era-title');
+    const eraDescription = document.getElementById('era-description');
+    const alertBox = document.getElementById('alert');
+    const nextEraBtn = document.getElementById('next-era');
+    const skipEraBtn = document.getElementById('skip-era');
+    const particles = document.getElementById('particles');
+    const choiceModal = document.getElementById('choiceModal');
+    const narrative = document.getElementById('narrative');
+    const choice1 = document.getElementById('choice1');
+    const choice2 = document.getElementById('choice2');
+    const medalsContainer = document.getElementById('medals');
+    const mysteriousWindow = document.getElementById('mysteriousWindow');
+    const startButton = document.getElementById('start-button');
+    const gameContainer = document.getElementById('game-container');
+    const startMenu = document.getElementById('start-menu');
+    const welcomeModal = document.getElementById('welcomeModal');
+    const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
+    const clickSound = document.getElementById('click-sound');
+    const upgradeSound = document.getElementById('upgrade-sound');
+    const eraSound = document.getElementById('era-sound');
+
+    startButton.addEventListener('click', () => {
+        startMenu.style.display = 'none';
+        gameContainer.style.display = 'flex';
+        loadGame();
+        updateEra();
+        welcomeModal.style.display = 'block';
+    });
+
+    closeWelcomeModalBtn.addEventListener('click', () => {
+        welcomeModal.style.display = 'none';
+    });
+
+    function updateEra() {
+        const era = eras[currentEra];
+        const background = document.getElementById('background');
+        background.style.background = era.gradient;
+        background.style.backgroundSize = '2000% 2000%';
+        background.style.animation = 'gradientAnimation 30s ease infinite';
+        background.className = '';
+
+        if (era.name === "AI Age") {
+            background.classList.add('ai-age');
+            addStarsAndComets();
+        } else {
+            removeStarsAndComets();
         }
 
-        function updateGlowingText() {
-            if (passivePoints > 0) {
-                const glowingText = document.querySelector(".glowing-text");
-                glowingText.textContent = `+${passivePoints.toFixed(1)}/s`;
-                glowingText.style.animation = "fadeOut 1s ease-out forwards, moveUp 1s ease-out forwards";
-                setTimeout(() => {
-                    glowingText.style.animation = "";
-                }, 1000);
-            }
+        if (era.name === "Stone Age") {
+            addSnowstorm();
+        } else {
+            removeSnowstorm();
         }
 
-        function setupPassivePoints() {
-            if (passivePoints > 0) {
-                if (passiveInterval) clearInterval(passiveInterval);
-                passiveInterval = setInterval(() => {
-                    points += passivePoints;
-                    updateScore(true);
-                    updateGlowingText();
-                }, 1000);
-            }
+        if (era.name === "Iron Age") {
+            addSmoke();
+        } else {
+            removeSmoke();
         }
 
-        function resetUpgrades() {
-            const upgrades = document.querySelectorAll('.upgrade');
-            upgrades.forEach(upgrade => upgrade.classList.remove('active'));
-            upgradeClickValue = 0.0;
-            passivePoints = 0.0;
+        clickArea.style.background = `radial-gradient(circle at 75% 25%, ${era.color}, #4ecdc4)`;
+        document.documentElement.style.setProperty('--age-glow-color', era.glow);
+        eraTitle.textContent = era.name;
+        eraDescription.textContent = era.description;
+        upgradePanel.innerHTML = '';
+
+        era.upgrades.sort((a, b) => a.cost - b.cost);
+
+        era.upgrades.forEach((upgrade, index) => {
+            const upgradeElement = document.createElement('div');
+            upgradeElement.className = 'upgrade';
+            upgradeElement.textContent = `${upgrade.name} - ${upgrade.cost} Points`;
+            upgradeElement.setAttribute('data-cost', upgrade.cost);
+            upgradeElement.setAttribute('data-description', upgrade.description);
+            upgradeElement.style.setProperty('--orbit-color', upgrade.color);
+            upgradeElement.style.setProperty('--orbit-radius', `${120 + index * 20}px`);
+            upgradeElement.addEventListener('click', () => {
+                if (points >= upgrade.cost) {
+                    points -= upgrade.cost;
+                    updateScore();
+                    upgradeElement.classList.add('active');
+                    upgrade.effect();
+                    upgradeSound.play();
+
+                    const orbit = document.createElement('div');
+                    orbit.className = 'orbit';
+                    orbit.style.top = '50%';
+                    orbit.style.left = '50%';
+                    orbit.style.background = `radial-gradient(circle at 75% 25%, ${upgrade.color}, rgba(255,255,255,0.5))`;
+                    orbit.style.boxShadow = `0 0 10px ${upgrade.color}`;
+                    orbit.style.width = `${upgrade.size}px`;
+                    orbit.style.height = `${upgrade.size}px`;
+                    orbit.style.animationDuration = `${8 + index * 2}s`;
+                    orbit.style.setProperty('--orbit-radius', upgradeElement.style.getPropertyValue('--orbit-radius'));
+                    mainGame.appendChild(orbit);
+
+                    const allUpgradesActive = Array.from(document.querySelectorAll('.upgrade')).every(up => up.classList.contains('active'));
+                    if (allUpgradesActive) unlockAchievement(3); // Upgrade Master
+                } else {
+                    showAlert('Not enough points!', 5000);
+                }
+            });
+            upgradePanel.appendChild(upgradeElement);
+        });
+
+        shownDilemmas = new Set();
+        startRandomDilemmaTimer();
+    }
+
+    function showAlert(message, duration = 5000) {
+        alertBox.innerText = message;
+        alertBox.classList.remove('success', 'failure');
+        alertBox.style.display = 'block';
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, duration);
+    }
+
+    function unlockAchievement(index) {
+        if (!achievements[index].unlocked) {
+            achievements[index].unlocked = true;
+            const popup = document.getElementById('achievementPopup');
+            popup.innerHTML = `<p>Achievement Unlocked: ${achievements[index].name}</p><p>Press Esc to view achievements</p>`;
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 5000);
+            saveGame();
+
+            // Check for Achievement Hunter
+            const allOthersUnlocked = achievements.slice(0, -1).every(ach => ach.unlocked);
+            if (allOthersUnlocked && index !== achievements.length - 1) {
+                unlockAchievement(achievements.length - 1); // Unlock Achievement Hunter
+            }
+        }
+    }
+
+    function createParticle(x, y, size = 5, color = 'var(--age-glow-color)') {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.background = color;
+        particles.appendChild(particle);
+        setTimeout(() => particles.removeChild(particle), 1000);
+    }
+
+    function explodeOrbits() {
+        const orbits = document.querySelectorAll('.orbit');
+        orbits.forEach(orbit => {
+            orbit.style.animation = 'explode 1s forwards';
+            setTimeout(() => mainGame.removeChild(orbit), 1000);
+        });
+    }
+
+    function showChoice() {
+        const era = eras[currentEra];
+        if (era.dilemma) {
+            narrative.textContent = era.dilemma.narrative;
+            choice1.textContent = era.dilemma.choices[0];
+            choice2.textContent = era.dilemma.choices[1];
+            choiceModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+
+            choice1.onclick = () => handleChoice(0, era.dilemma.correct);
+            choice2.onclick = () => handleChoice(1, era.dilemma.correct);
+        } else {
+            advanceEra();
+        }
+    }
+
+    function handleChoice(chosen, correct) {
+        choiceModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        if (chosen === correct) {
+            addMedal(currentEra);
+            showSuccessScreen();
+        } else {
+            showMysteriousWindow();
+            showFailureScreen();
+        }
+        advanceEra();
+    }
+
+    function showSuccessScreen() {
+        alertBox.innerText = `The gods award you with a medal: ${eras[currentEra].dilemma.medalDescription}`;
+        alertBox.classList.add('success');
+        alertBox.classList.remove('failure');
+        alertBox.style.display = 'block';
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    function showFailureScreen() {
+        alertBox.innerText = 'The gods will remember that.';
+        alertBox.classList.add('failure');
+        alertBox.classList.remove('success');
+        alertBox.style.display = 'block';
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    function addMedal(eraIndex) {
+        const medal = document.createElement('div');
+        medal.className = 'medal';
+        medal.style.setProperty('--medal-color', eras[eraIndex].medalColor);
+        medal.setAttribute('data-tooltip', eras[eraIndex].dilemma.medalDescription);
+        medalsContainer.appendChild(medal);
+        medals.push(medal);
+        if (medals.length === 1) unlockAchievement(1); // Medal Collector
+    }
+
+    function showMysteriousWindow() {
+        mysteriousWindow.style.display = 'block';
+        setTimeout(() => mysteriousWindow.style.display = 'none', 2000);
+    }
+
+    function advanceEra() {
+        if (currentEra < eras.length - 1) {
+            explodeOrbits();
+            points = 0.0;
+            updateScore();
+            baseClickValue *= 2;
             if (passiveInterval) {
                 clearInterval(passiveInterval);
                 passiveInterval = null;
             }
-        }
-
-        const eras = [
-            {
-                name: "Stone Age", color: "#8B4513", glow: "#FFA07A", medalColor: "#8B4513", advanceCost: 250,
-                dilemma: {
-                    narrative: "The winter is harsh, and food is scarce. You've located a herd of wild animals. Do you:",
-                    choices: ["Attempt to domesticate them for future stability", "Hunt them all for immediate survival"],
-                    correct: 0,
-                    medalDescription: "Medal of the Stone Age - For showing foresight by domesticating animals."
-                },
-                upgrades: [
-                    {name: "Animal Domestication", cost: 100, effect: () => upgradeClickValue += 2.0, description: "Domesticating animals provides a stable food source, increasing points earned on click by 2.0.", color: "#654321", size: 20},
-                    {name: "Fire Mastery", cost: 50, effect: () => { passivePoints += 2.0; updateGlowingText(); setupPassivePoints(); }, description: "Mastering fire provides warmth and protection, gaining 2.0 points per second.", color: "#DAA520", size: 25},
-                    {name: "Stone Tools", cost: 10, effect: () => upgradeClickValue += baseClickValue * 0.2, description: "Crafting stone tools improves efficiency, increasing click efficiency by 20%.", color: "#704214", size: 30},
-                ],
-                description: "Harsh winters and predators force adaptation.",
-                gradient: "linear-gradient(270deg, #8B4513, #FFA07A, #8B4513, #FFA07A, #8B4513)",
-                randomDilemmas: [
-                    {
-                        narrative: "A neighboring tribe demands all your stone and tools! Do you:",
-                        choices: ["Hand them over to avoid conflict", "Refuse and defend your resources"],
-                        outcomes: [
-                            () => { points -= 50; upgradeClickValue += 1; showAlert("You lose 50 points but gain +1 click value!", 5000); },
-                            () => { passivePoints += 1; points -= 100; showAlert("You defend successfully but lose 100 points, gaining +1 passive point!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A sudden storm destroys your shelters. Do you:",
-                        choices: ["Rebuild stronger with stone", "Move to a new area"],
-                        outcomes: [
-                            () => { points -= 20; upgradeClickValue += 1; showAlert("Costs 20 points but clicks are worth +1!", 5000); },
-                            () => { passivePoints -= 1; showAlert("Lose 1 passive point per second from disruption.", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Bronze Age", color: "#CD7F32", glow: "#FF8C00", medalColor: "#CD7F32", advanceCost: 1500,
-                dilemma: {
-                    narrative: "Your tribe has discovered a new metal. Do you:",
-                    choices: ["Use it for weapons to conquer neighboring tribes", "Use it for tools to improve farming"],
-                    correct: 1,
-                    medalDescription: "Medal of the Bronze Age - For choosing peace and prosperity over war."
-                },
-                upgrades: [
-                    {name: "Trade Routes", cost: 800, effect: () => upgradeClickValue += 4.0, description: "Establishing trade routes increases points earned on click by 4.0.", color: "#CD853F", size: 20},
-                    {name: "Irrigation Systems", cost: 400, effect: () => { passivePoints += 4.0; updateGlowingText(); setupPassivePoints(); }, description: "Building irrigation systems gains 4.0 points per second.", color: "#D2691E", size: 25},
-                    {name: "Bronze Swords", cost: 200, effect: () => upgradeClickValue += baseClickValue * 0.3, description: "Forging bronze swords increases click efficiency by 30%.", color: "#B22222", size: 30},
-                ],
-                description: "Metallurgy brings new tools and weapons.",
-                gradient: "linear-gradient(270deg, #CD7F32, #FF8C00, #CD7F32, #FF8C00, #CD7F32)",
-                randomDilemmas: [
-                    {
-                        narrative: "Bandits raid your trade routes! Do you:",
-                        choices: ["Pay them off with bronze", "Fight them off"],
-                        outcomes: [
-                            () => { points -= 100; passivePoints += 2; showAlert("You lose 100 points but gain +2 passive points!", 5000); },
-                            () => { upgradeClickValue -= 2; points += 50; showAlert("You lose 2 click value but gain 50 points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A rival city offers a trade alliance. Do you:",
-                        choices: ["Accept and share technologies", "Decline and focus on self-sufficiency"],
-                        outcomes: [
-                            () => { passivePoints += 3; points -= 200; showAlert("Alliance boosts passive income by 3 but costs 200 points!", 5000); },
-                            () => { upgradeClickValue += 2; showAlert("Self-reliance boosts click value by 2!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Iron Age", color: "#A9A9A9", glow: "#C0C0C0", medalColor: "#A9A9A9", advanceCost: 3000,
-                dilemma: {
-                    narrative: "Your kingdom is threatened by invaders. Do you:",
-                    choices: ["Fortify your defenses and prepare for a siege", "Launch a preemptive strike"],
-                    correct: 0,
-                    medalDescription: "Medal of the Iron Age - For prioritizing defense and strategy."
-                },
-                upgrades: [
-                    {name: "Fortifications", cost: 4000, effect: () => upgradeClickValue += 8.0, description: "Building fortifications increases points earned on click by 8.0.", color: "#808080", size: 20},
-                    {name: "Advanced Farming", cost: 2000, effect: () => { passivePoints += 8.0; updateGlowingText(); setupPassivePoints(); }, description: "Advancing farming gains 8.0 points per second.", color: "#A9A9A9", size: 25},
-                    {name: "Iron Swords", cost: 1000, effect: () => upgradeClickValue += baseClickValue * 0.4, description: "Forging iron swords increases click efficiency by 40%.", color: "#696969", size: 30},
-                ],
-                description: "Stronger tools and weapons lead to powerful empires.",
-                gradient: "linear-gradient(270deg, #A9A9A9, #C0C0C0, #A9A9A9, #C0C0C0, #A9A9A9)",
-                randomDilemmas: [
-                    {
-                        narrative: "A rival kingdom offers an alliance. Do you:",
-                        choices: ["Accept and share resources", "Reject and prepare for war"],
-                        outcomes: [
-                            () => { passivePoints += 2; points -= 200; showAlert("Alliance boosts passive income by 2 but costs 200 points!", 5000); },
-                            () => { upgradeClickValue += 3; points -= 500; showAlert("War prep boosts click value by 3 but costs 500 points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A famine strikes your lands. Do you:",
-                        choices: ["Ration food strictly", "Seek aid from neighbors"],
-                        outcomes: [
-                            () => { points -= 150; upgradeClickValue += 2; showAlert("Rationing costs 150 points but boosts click value by 2!", 5000); },
-                            () => { passivePoints -= 1; showAlert("Dependency reduces passive income by 1!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Classical Age", color: "#ADD8E6", glow: "#FFDAB9", medalColor: "#FFFACD", advanceCost: 6000,
-                dilemma: {
-                    narrative: "Your empire is at its peak. Do you:",
-                    choices: ["Focus on cultural advancements and education", "Expand your territory through military conquest"],
-                    correct: 0,
-                    medalDescription: "Medal of the Classical Age - For valuing knowledge and cultural growth."
-                },
-                upgrades: [
-                    {name: "Literature", cost: 8000, effect: () => upgradeClickValue += 16.0, description: "Promoting literature increases points earned on click by 16.0.", color: "#FFFACD", size: 20},
-                    {name: "Architecture", cost: 4000, effect: () => { passivePoints += 16.0; updateGlowingText(); setupPassivePoints(); }, description: "Developing architecture gains 16.0 points per second.", color: "#EEE8AA", size: 25},
-                    {name: "Philosophy", cost: 2000, effect: () => upgradeClickValue += baseClickValue * 0.5, description: "Studying philosophy increases click efficiency by 50%.", color: "#FFF8DC", size: 30},
-                ],
-                description: "Cultural advancements and knowledge lead to a golden age.",
-                gradient: "linear-gradient(270deg, #ADD8E6, #FFDAB9, #ADD8E6, #FFDAB9, #ADD8E6)",
-                randomDilemmas: [
-                    {
-                        narrative: "A philosopher proposes a radical idea. Do you:",
-                        choices: ["Fund their research", "Banish them for heresy"],
-                        outcomes: [
-                            () => { upgradeClickValue += 5; points -= 1000; showAlert("New ideas boost click value by 5 but cost 1000 points!", 5000); },
-                            () => { passivePoints -= 5; showAlert("Fear stifles progress, lose 5 passive points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A foreign envoy requests cultural exchange. Do you:",
-                        choices: [" Agree and share knowledge", "Refuse to protect traditions"],
-                        outcomes: [
-                            () => { passivePoints += 5; points -= 500; showAlert("Exchange boosts passive income by 5 but costs 500 points!", 5000); },
-                            () => { upgradeClickValue += 3; showAlert("Isolation boosts click value by 3!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Medieval Age", color: "#8A2BE2", glow: "#9370DB", medalColor: "#8A2BE2", advanceCost: 12000,
-                dilemma: {
-                    narrative: "Your kingdom faces internal strife. Do you:",
-                    choices: ["Implement reforms to address grievances", "Suppress the rebellion with force"],
-                    correct: 0,
-                    medalDescription: "Medal of the Medieval Age - For addressing the needs of your people."
-                },
-                upgrades: [
-                    {name: "Feudal System", cost: 40000, effect: () => upgradeClickValue += 32.0, description: "Implementing a feudal system increases points earned on click by 32.0.", color: "#9370DB", size: 20},
-                    {name: "Castles", cost: 20000, effect: () => { passivePoints += 32.0; updateGlowingText(); setupPassivePoints(); }, description: "Building castles gains 32.0 points per second.", color: "#8A2BE2", size: 25},
-                    {name: "Knighthood", cost: 10000, effect: () => upgradeClickValue += baseClickValue * 0.6, description: "Establishing knighthood increases click efficiency by 60%.", color: "#9932CC", size: 30},
-                ],
-                description: "Feudal system, castles, and strife define this era.",
-                gradient: "linear-gradient(270deg, #8A2BE2, #9370DB, #8A2BE2, #9370DB, #8A2BE2)",
-                randomDilemmas: [
-                    {
-                        narrative: "A plague spreads through your lands. Do you:",
-                        choices: ["Quarantine the sick", "Pray for divine intervention"],
-                        outcomes: [
-                            () => { points -= 1000; passivePoints += 10; showAlert("Quarantine costs 1000 points but boosts passive income by 10!", 5000); },
-                            () => { resetUpgrades(); showAlert("Faith fails, lose all upgrades!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "Peasants demand land rights. Do you:",
-                        choices: ["Grant limited rights", "Crush their uprising"],
-                        outcomes: [
-                            () => { passivePoints += 8; points -= 1500; showAlert("Rights boost passive income by 8 but cost 1500 points!", 5000); },
-                            () => { upgradeClickValue -= 5; showAlert("Force reduces click value by 5!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Renaissance Age", color: "#FFDAB9", glow: "#FFD700", medalColor: "#FFD700", advanceCost: 24000,
-                dilemma: {
-                    narrative: "A new era of enlightenment is upon you. Do you:",
-                    choices: ["Support the arts and sciences", "Focus on military expansion"],
-                    correct: 0,
-                    medalDescription: "Medal of the Renaissance Age - For fostering creativity and innovation."
-                },
-                upgrades: [
-                    {name: "Printing Press", cost: 80000, effect: () => upgradeClickValue += 64.0, description: "Inventing the printing press increases points earned on click by 64.0.", color: "#FFD700", size: 20},
-                    {name: "Scientific Discovery", cost: 40000, effect: () => { passivePoints += 64.0; updateGlowingText(); setupPassivePoints(); }, description: "Advancing science gains 64.0 points per second.", color: "#FFD700", size: 25},
-                    {name: "Art Patronage", cost: 20000, effect: () => upgradeClickValue += baseClickValue * 0.7, description: "Supporting art increases click efficiency by 70%.", color: "#FFD700", size: 30},
-                ],
-                description: "Arts and sciences flourish.",
-                gradient: "linear-gradient(270deg, #FFDAB9, #FFD700, #FFDAB9, #FFD700, #FFDAB9)",
-                randomDilemmas: [
-                    {
-                        narrative: "An artist seeks patronage for a masterpiece. Do you:",
-                        choices: ["Fund the project", "Reject it as frivolous"],
-                        outcomes: [
-                            () => { points -= 5000; upgradeClickValue += 20; showAlert("Costs 5000 points but boosts click value by 20!", 5000); },
-                            () => { passivePoints -= 10; showAlert("Creativity wanes, lose 10 passive points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A scientist invents a new device. Do you:",
-                        choices: ["Invest in its development", "Ban it as dangerous"],
-                        outcomes: [
-                            () => { passivePoints += 15; points -= 3000; showAlert("Innovation boosts passive income by 15 but costs 3000 points!", 5000); },
-                            () => { upgradeClickValue -= 10; showAlert("Fear halts progress, lose 10 click value!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Industrial Age", color: "#808080", glow: "#A9A9A9", medalColor: "#808080", advanceCost: 48000,
-                dilemma: {
-                    narrative: "Industrialization is changing the world. Do you:",
-                    choices: ["Invest in factories and infrastructure", "Focus on worker rights and conditions"],
-                    correct: 1,
-                    medalDescription: "Medal of the Industrial Age - For prioritizing worker well-being."
-                },
-                upgrades: [
-                    {name: "Labor Laws", cost: 200000, effect: () => upgradeClickValue += 128.0, description: "Implementing labor laws increases points earned on click by 128.0.", color: "#808080", size: 20},
-                    {name: "Railways", cost: 100000, effect: () => { passivePoints += 128.0; updateGlowingText(); setupPassivePoints(); }, description: "Building railways gains 128.0 points per second.", color: "#A9A9A9", size: 25},
-                    {name: "Factories", cost: 50000, effect: () => upgradeClickValue += baseClickValue * 0.8, description: "Improving factories increases click efficiency by 80%.", color: "#696969", size: 30},
-                ],
-                description: "Industrialization and urbanization transform society.",
-                gradient: "linear-gradient(270deg, #808080, #A9A9A9, #808080, #A9A9A9, #808080)",
-                randomDilemmas: [
-                    {
-                        narrative: "A factory explosion disrupts production. Do you:",
-                        choices: ["Rebuild immediately", "Investigate the cause"],
-                        outcomes: [
-                            () => { points -= 10000; passivePoints += 50; showAlert("Costs 10000 points but boosts passive income by 50!", 5000); },
-                            () => { resetUpgrades(); showAlert("Delay reveals sabotage, lose all upgrades!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "Workers strike for better wages. Do you:",
-                        choices: ["Negotiate a raise", "Replace them with machines"],
-                        outcomes: [
-                            () => { passivePoints += 30; points -= 8000; showAlert("Raises boost passive income by 30 but cost 8000 points!", 5000); },
-                            () => { upgradeClickValue += 40; points -= 2000; showAlert("Machines boost click value by 40 but cost 2000 points!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Modern Age", color: "#008000", glow: "#00FF00", medalColor: "#008000", advanceCost: 96000,
-                dilemma: {
-                    narrative: "Technology is advancing rapidly. Do you:",
-                    choices: ["Invest in renewable energy sources", "Focus on space exploration"],
-                    correct: 0,
-                    medalDescription: "Medal of the Modern Age - For promoting sustainable energy."
-                },
-                upgrades: [
-                    {name: "Globalization", cost: 400000, effect: () => upgradeClickValue += 256.0, description: "Promoting globalization increases points earned on click by 256.0.", color: "#008000", size: 20},
-                    {name: "Internet", cost: 200000, effect: () => { passivePoints += 256.0; updateGlowingText(); setupPassivePoints(); }, description: "Developing the internet gains 256.0 points per second.", color: "#00FF00", size: 25},
-                    {name: "Renewable Energy", cost: 100000, effect: () => upgradeClickValue += baseClickValue * 0.9, description: "Investing in renewables increases click efficiency by 90%.", color: "#008000", size: 30},
-                ],
-                description: "Technology, globalization, and sustainability define this era.",
-                gradient: "linear-gradient(270deg, #008000, #00FF00, #008000, #00FF00, #008000)",
-                randomDilemmas: [
-                    {
-                        narrative: "A cyberattack threatens your networks. Do you:",
-                        choices: ["Pay the ransom", "Hire experts to fight back"],
-                        outcomes: [
-                            () => { points -= 20000; showAlert("Lose 20000 points to the hackers!", 5000); },
-                            () => { passivePoints += 100; points -= 5000; showAlert("Victory boosts passive income by 100 but costs 5000 points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A climate crisis looms. Do you:",
-                        choices: ["Invest in green tech", "Ignore it for short-term gains"],
-                        outcomes: [
-                            () => { passivePoints += 80; points -= 15000; showAlert("Green tech boosts passive income by 80 but costs 15000 points!", 5000); },
-                            () => { upgradeClickValue -= 50; showAlert("Neglect reduces click value by 50!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "Information Age", color: "#0000FF", glow: "#1E90FF", medalColor: "#0000FF", advanceCost: 192000,
-                dilemma: {
-                    narrative: "Information is power. Do you:",
-                    choices: ["Promote free and open information", "Control and censor information"],
-                    correct: 0,
-                    medalDescription: "Medal of the Information Age - For championing open knowledge."
-                },
-                upgrades: [
-                    {name: "Data Centers", cost: 800000, effect: () => upgradeClickValue += 512.0, description: "Building data centers increases points earned on click by 512.0.", color: "#0000FF", size: 20},
-                    {name: "Cybersecurity", cost: 400000, effect: () => { passivePoints += 512.0; updateGlowingText(); setupPassivePoints(); }, description: "Enhancing cybersecurity gains 512.0 points per second.", color: "#1E90FF", size: 25},
-                    {name: "Social Media", cost: 200000, effect: () => upgradeClickValue += baseClickValue * 1.0, description: "Developing social media increases click efficiency by 100%.", color: "#4169E1", size: 30},
-                ],
-                description: "Digital networks and information dominate.",
-                gradient: "linear-gradient(270deg, #0000FF, #1E90FF, #0000FF, #1E90FF, #0000FF)",
-                randomDilemmas: [
-                    {
-                        narrative: "A data breach exposes secrets. Do you:",
-                        choices: ["Patch it quietly", "Go public and fix it"],
-                        outcomes: [
-                            () => { points -= 30000; upgradeClickValue += 100; showAlert("Costs 30000 points but boosts click value by 100!", 5000); },
-                            () => { passivePoints += 150; points -= 10000; showAlert("Transparency boosts passive income by 150 but costs 10000 points!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A viral rumor spreads online. Do you:",
-                        choices: ["Censor it", "Counter with truth"],
-                        outcomes: [
-                            () => { upgradeClickValue -= 80; showAlert("Censorship reduces click value by 80!", 5000); },
-                            () => { passivePoints += 120; points -= 5000; showAlert("Truth boosts passive income by 120 but costs 5000 points!", 5000); }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: "AI Age", color: "#000000", glow: "#FF4500", medalColor: "#FF0000", advanceCost: 384000,
-                dilemma: {
-                    narrative: "AI has reached a critical point. Do you:",
-                    choices: ["Implement strict controls on AI", "Allow AI autonomy to solve global issues"],
-                    correct: 1,
-                    medalDescription: "Medal of the AI Age - For embracing AI's potential."
-                },
-                upgrades: [
-                    {name: "Automated Society", cost: 1600000, effect: () => upgradeClickValue += 1024.0, description: "Automation increases points earned on click by 1024.0.", color: "#FF4500", size: 20},
-                    {name: "Quantum Computing", cost: 800000, effect: () => { passivePoints += 1024.0; updateGlowingText(); setupPassivePoints(); }, description: "Quantum computing gains 1024.0 points per second.", color: "#FF6347", size: 25},
-                    {name: "Neural Network", cost: 400000, effect: () => upgradeClickValue += baseClickValue * 1.1, description: "Neural networks increase click efficiency by 110%.", color: "#DC143C", size: 30},
-                ],
-                description: "AI's potential defines this era.",
-                gradient: "linear-gradient(270deg, #000000, #FF4500, #000000, #FF4500, #000000)",
-                randomDilemmas: [
-                    {
-                        narrative: "An AI glitch threatens your systems! Do you:",
-                        choices: ["Shut it down temporarily", "Let it self-correct"],
-                        outcomes: [
-                            () => { passivePoints -= 500; showAlert("Lose 500 passive points per second!", 5000); },
-                            () => { points += 10000; resetUpgrades(); showAlert("AI fixes itself, grants 10,000 points but resets upgrades!", 5000); }
-                        ]
-                    },
-                    {
-                        narrative: "A rogue AI offers to optimize your society. Do you:",
-                        choices: ["Accept its help", "Destroy it to retain control"],
-                        outcomes: [
-                            () => { passivePoints += 300; points -= 20000; showAlert("Gain 300 passive points but lose 20000 points!", 5000); },
-                            () => { upgradeClickValue += 200; showAlert("Control retained, gain 200 click value!", 5000); }
-                        ]
-                    }
-                ]
+            if (dilemmaInterval) {
+                clearInterval(dilemmaInterval);
+                dilemmaInterval = null;
             }
-        ];
-
-        const mainGame = document.getElementById('main-game');
-        const clickArea = document.getElementById('click-area');
-        const scoreDisplay = document.getElementById('score');
-        const upgradePanel = document.getElementById('upgrades');
-        const eraTitle = document.getElementById('era-title');
-        const eraDescription = document.getElementById('era-description');
-        const alertBox = document.getElementById('alert');
-        const nextEraBtn = document.getElementById('next-era');
-        const skipEraBtn = document.getElementById('skip-era');
-        const particles = document.getElementById('particles');
-        const choiceModal = document.getElementById('choiceModal');
-        const narrative = document.getElementById('narrative');
-        const choice1 = document.getElementById('choice1');
-        const choice2 = document.getElementById('choice2');
-        const medalsContainer = document.getElementById('medals');
-        const mysteriousWindow = document.getElementById('mysteriousWindow');
-        const startButton = document.getElementById('start-button');
-        const gameContainer = document.getElementById('game-container');
-        const startMenu = document.getElementById('start-menu');
-        const welcomeModal = document.getElementById('welcomeModal');
-        const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
-        const clickSound = document.getElementById('click-sound');
-        const upgradeSound = document.getElementById('upgrade-sound');
-        const eraSound = document.getElementById('era-sound');
-
-        startButton.addEventListener('click', () => {
-            startMenu.style.display = 'none';
-            gameContainer.style.display = 'flex';
-            loadGame();
+            resetUpgrades();
+            currentEra++;
+            eraSound.play();
             updateEra();
-            welcomeModal.style.display = 'block';
-        });
-
-        closeWelcomeModalBtn.addEventListener('click', () => {
-            welcomeModal.style.display = 'none';
-        });
-
-        function updateEra() {
-            const era = eras[currentEra];
-            const background = document.getElementById('background');
-            background.style.background = era.gradient;
-            background.style.backgroundSize = '2000% 2000%';
-            background.style.animation = 'gradientAnimation 30s ease infinite';
-            background.className = '';
-
-            if (era.name === "AI Age") {
-                background.classList.add('ai-age');
-                addStarsAndComets();
-            } else {
-                removeStarsAndComets();
+            saveGame();
+            if (currentEra === 1) unlockAchievement(0); // First Steps
+            if (currentEra === eras.length - 1) {
+                const timeElapsed = Date.now() - gameStartTime;
+                if (timeElapsed < 3600000) unlockAchievement(8); // Speedrunner
+                if (medals.length < eras.length - 1) {
+                    showAlert("You need all Medals of History to achieve the true ending!", 5000);
+                }
             }
-
-            if (era.name === "Stone Age") {
-                addSnowstorm();
-            } else {
-                removeSnowstorm();
-            }
-
-            if (era.name === "Iron Age") {
-                addSmoke();
-            } else {
-                removeSmoke();
-            }
-
-            clickArea.style.background = `radial-gradient(circle at 75% 25%, ${era.color}, #4ecdc4)`;
-            document.documentElement.style.setProperty('--age-glow-color', era.glow);
-            eraTitle.textContent = era.name;
-            eraDescription.textContent = era.description;
-            upgradePanel.innerHTML = '';
-
-            era.upgrades.sort((a, b) => a.cost - b.cost);
-
-            era.upgrades.forEach((upgrade, index) => {
-                const upgradeElement = document.createElement('div');
-                upgradeElement.className = 'upgrade';
-                upgradeElement.textContent = `${upgrade.name} - ${upgrade.cost} Points`;
-                upgradeElement.setAttribute('data-cost', upgrade.cost);
-                upgradeElement.setAttribute('data-description', upgrade.description);
-                upgradeElement.style.setProperty('--orbit-color', upgrade.color);
-                upgradeElement.style.setProperty('--orbit-radius', `${120 + index * 20}px`);
-                upgradeElement.addEventListener('click', () => {
-                    if (points >= upgrade.cost) {
-                        points -= upgrade.cost;
-                        updateScore(false);
-                        upgradeElement.classList.add('active');
-                        upgrade.effect();
-                        upgradeSound.play();
-
-                        const orbit = document.createElement('div');
-                        orbit.className = 'orbit';
-                        orbit.style.top = '50%';
-                        orbit.style.left = '50%';
-                        orbit.style.background = `radial-gradient(circle at 75% 25%, ${upgrade.color}, rgba(255,255,255,0.5))`;
-                        orbit.style.boxShadow = `0 0 10px ${upgrade.color}`;
-                        orbit.style.width = `${upgrade.size}px`;
-                        orbit.style.height = `${upgrade.size}px`;
-                        orbit.style.animationDuration = `${8 + index * 2}s`;
-                        orbit.style.setProperty('--orbit-radius', upgradeElement.style.getPropertyValue('--orbit-radius'));
-                        mainGame.appendChild(orbit);
-
-                        const allUpgradesActive = Array.from(document.querySelectorAll('.upgrade')).every(up => up.classList.contains('active'));
-                        if (allUpgradesActive) unlockAchievement(3); // Upgrade Master
-                    } else {
-                        showAlert('Not enough points!', 3000);
-                    }
-                });
-                upgradePanel.appendChild(upgradeElement);
-            });
-
-            shownDilemmas = new Set();
-            startRandomDilemmaTimer();
-        }
-
-        function showAlert(message, duration = 3000) {
-            alertBox.innerText = message;
-            alertBox.classList.remove('success', 'failure');
-            alertBox.style.display = 'block';
-            setTimeout(() => {
-                alertBox.style.display = 'none';
-            }, duration);
-        }
-
-        function unlockAchievement(index) {
-            if (!achievements[index].unlocked) {
-                achievements[index].unlocked = true;
-                const popup = document.getElementById('achievementPopup');
-                popup.innerHTML = `<p>Achievement Unlocked: ${achievements[index].name}</p><p>Press Esc to view achievements</p>`;
-                popup.style.display = 'block';
+        } else {
+            if (medals.length === eras.length - 1) {
+                showAlert("Congratulations! You have collected all Medals of History and reached the pinnacle of human civilization! Humanity Clicker is yours to command!", 5000);
+                unlockAchievement(7); // Perfect Run
+                unlockAchievement(9); // True Ending
                 setTimeout(() => {
-                    popup.style.display = 'none';
-                }, 5000);
-                saveGame();
-            }
-        }
-
-        function createParticle(x, y, size = 5, color = 'var(--age-glow-color)') {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.background = color;
-            particles.appendChild(particle);
-            setTimeout(() => particles.removeChild(particle), 1000);
-        }
-
-        function explodeOrbits() {
-            const orbits = document.querySelectorAll('.orbit');
-            orbits.forEach(orbit => {
-                orbit.style.animation = 'explode 1s forwards';
-                setTimeout(() => mainGame.removeChild(orbit), 1000);
-            });
-        }
-
-        function showChoice() {
-            const era = eras[currentEra];
-            if (era.dilemma) {
-                narrative.textContent = era.dilemma.narrative;
-                choice1.textContent = era.dilemma.choices[0];
-                choice2.textContent = era.dilemma.choices[1];
-                choiceModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-
-                choice1.onclick = () => handleChoice(0, era.dilemma.correct);
-                choice2.onclick = () => handleChoice(1, era.dilemma.correct);
+                    const victoryScreen = document.createElement('div');
+                    victoryScreen.style.position = 'fixed';
+                    victoryScreen.style.top = '0';
+                    victoryScreen.style.left = '0';
+                    victoryScreen.style.width = '100%';
+                    victoryScreen.style.height = '100%';
+                    victoryScreen.style.background = 'rgba(0, 0, 0, 0.9)';
+                    victoryScreen.style.color = '#FFD700';
+                    victoryScreen.style.display = 'flex';
+                    victoryScreen.style.flexDirection = 'column';
+                    victoryScreen.style.justifyContent = 'center';
+                    victoryScreen.style.alignItems = 'center';
+                    victoryScreen.style.zIndex = '2000';
+                    victoryScreen.innerHTML = `
+                        <h1 style="font-size: 3em; text-shadow: 0 0 10px #FFD700;">Victory!</h1>
+                        <p>You have mastered the ages, earning all Medals of History.</p>
+                        <p>Humanity's legacy is secure under your guidance.</p>
+                        <button id="restartGame" style="margin-top: 20px; padding: 15px 30px; font-size: 1.2em; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">Start Anew</button>
+                    `;
+                    document.body.appendChild(victoryScreen);
+                    document.getElementById('restartGame').addEventListener('click', () => {
+                        localStorage.removeItem('humanityClickerSave');
+                        location.reload();
+                    });
+                }, 3000);
             } else {
-                advanceEra();
+                showAlert("You need all Medals of History to achieve the true ending!", 5000);
             }
         }
+    }
 
-        function handleChoice(chosen, correct) {
-            choiceModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            if (chosen === correct) {
-                addMedal(currentEra);
-                showSuccessScreen();
+    function skipEra() {
+        if (currentEra < eras.length - 1) {
+            explodeOrbits();
+            points = 0.0;
+            updateScore();
+            baseClickValue *= 2;
+            if (passiveInterval) {
+                clearInterval(passiveInterval);
+                passiveInterval = null;
+            }
+            if (dilemmaInterval) {
+                clearInterval(dilemmaInterval);
+                dilemmaInterval = null;
+            }
+            resetUpgrades();
+            currentEra++;
+            updateEra();
+            saveGame();
+            if (currentEra === eras.length - 1 && medals.length < eras.length - 1) {
+                showAlert("You need all Medals of History to achieve the true ending!", 5000);
+            }
+        } else {
+            if (medals.length === eras.length - 1) {
+                showAlert("Congratulations! You have collected all Medals of History and reached the pinnacle of human civilization!", 5000);
             } else {
-                showMysteriousWindow();
-                showFailureScreen();
-            }
-            advanceEra();
-        }
-
-        function showSuccessScreen() {
-            alertBox.innerText = `The gods award you with a medal: ${eras[currentEra].dilemma.medalDescription}`;
-            alertBox.classList.add('success');
-            alertBox.classList.remove('failure');
-            alertBox.style.display = 'block';
-            setTimeout(() => {
-                alertBox.style.display = 'none';
-            }, 5000);
-        }
-
-        function showFailureScreen() {
-            alertBox.innerText = 'The gods will remember that.';
-            alertBox.classList.add('failure');
-            alertBox.classList.remove('success');
-            alertBox.style.display = 'block';
-            setTimeout(() => {
-                alertBox.style.display = 'none';
-            }, 5000);
-        }
-
-        function addMedal(eraIndex) {
-            const medal = document.createElement('div');
-            medal.className = 'medal';
-            medal.style.setProperty('--medal-color', eras[eraIndex].medalColor);
-            medal.setAttribute('data-tooltip', eras[eraIndex].dilemma.medalDescription);
-            medalsContainer.appendChild(medal);
-            medals.push(medal);
-            if (medals.length === 1) unlockAchievement(1); // Medal Collector
-        }
-
-        function showMysteriousWindow() {
-            mysteriousWindow.style.display = 'block';
-            setTimeout(() => mysteriousWindow.style.display = 'none', 2000);
-        }
-
-        function advanceEra() {
-            if (currentEra < eras.length - 1) {
-                explodeOrbits();
-                points = 0.0;
-                updateScore(false);
-                baseClickValue *= 2;
-                if (passiveInterval) {
-                    clearInterval(passiveInterval);
-                    passiveInterval = null;
-                }
-                if (dilemmaInterval) {
-                    clearInterval(dilemmaInterval);
-                    dilemmaInterval = null;
-                }
-                resetUpgrades();
-                currentEra++;
-                eraSound.play();
-                updateEra();
-                saveGame();
-                if (currentEra === 1) unlockAchievement(0); // First Steps
-                if (currentEra === eras.length - 1) {
-                    const timeElapsed = Date.now() - gameStartTime;
-                    if (timeElapsed < 3600000) unlockAchievement(8); // Speedrunner
-                    if (medals.length < eras.length - 1) {
-                        showAlert("You need all Medals of History to achieve the true ending!", 3000);
-                    }
-                }
-            } else {
-                if (medals.length === eras.length - 1) {
-                    showAlert("Congratulations! You have collected all Medals of History and reached the pinnacle of human civilization! Humanity Clicker is yours to command!", 5000);
-                    unlockAchievement(7); // Perfect Run
-                    unlockAchievement(9); // True Ending
-                    setTimeout(() => {
-                        const victoryScreen = document.createElement('div');
-                        victoryScreen.style.position = 'fixed';
-                        victoryScreen.style.top = '0';
-                        victoryScreen.style.left = '0';
-                        victoryScreen.style.width = '100%';
-                        victoryScreen.style.height = '100%';
-                        victoryScreen.style.background = 'rgba(0, 0, 0, 0.9)';
-                        victoryScreen.style.color = '#FFD700';
-                        victoryScreen.style.display = 'flex';
-                        victoryScreen.style.flexDirection = 'column';
-                        victoryScreen.style.justifyContent = 'center';
-                        victoryScreen.style.alignItems = 'center';
-                        victoryScreen.style.zIndex = '2000';
-                        victoryScreen.innerHTML = `
-                            <h1 style="font-size: 3em; text-shadow: 0 0 10px #FFD700;">Victory!</h1>
-                            <p>You have mastered the ages, earning all Medals of History.</p>
-                            <p>Humanity's legacy is secure under your guidance.</p>
-                            <button id="restartGame" style="margin-top: 20px; padding: 15px 30px; font-size: 1.2em; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; color: #FFD700; cursor: pointer;">Start Anew</button>
-                        `;
-                        document.body.appendChild(victoryScreen);
-                        document.getElementById('restartGame').addEventListener('click', () => {
-                            localStorage.removeItem('humanityClickerSave');
-                            location.reload();
-                        });
-                    }, 3000);
-                } else {
-                    showAlert("You need all Medals of History to achieve the true ending!", 3000);
-                }
+                showAlert("You need all Medals of History to achieve the true ending!", 5000);
             }
         }
+    }
 
-        function skipEra() {
-            if (currentEra < eras.length - 1) {
-                explodeOrbits();
-                points = 0.0;
-                updateScore(false);
-                baseClickValue *= 2;
-                if (passiveInterval) {
-                    clearInterval(passiveInterval);
-                    passiveInterval = null;
-                }
-                if (dilemmaInterval) {
-                    clearInterval(dilemmaInterval);
-                    dilemmaInterval = null;
-                }
-                resetUpgrades();
-                currentEra++;
-                updateEra();
-                saveGame();
-                unlockAchievement(6); // Era Skipper
-                if (currentEra === eras.length - 1 && medals.length < eras.length - 1) {
-                    showAlert("You need all Medals of History to achieve the true ending!", 3000);
-                }
-            } else {
-                if (medals.length === eras.length - 1) {
-                    showAlert("Congratulations! You have collected all Medals of History and reached the pinnacle of human civilization!", 5000);
-                } else {
-                    showAlert("You need all Medals of History to achieve the true ending!", 3000);
-                }
-            }
+    function addStarsAndComets() {
+        const background = document.getElementById('background');
+        const numStars = 100;
+        const numComets = 10;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.top = `${Math.random() * 100}vh`;
+            star.style.left = `${Math.random() * 100}vw`;
+            background.appendChild(star);
         }
 
-        function addStarsAndComets() {
-            const background = document.getElementById('background');
-            const numStars = 100;
-            const numComets = 10;
-
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.top = `${Math.random() * 100}vh`;
-                star.style.left = `${Math.random() * 100}vw`;
-                background.appendChild(star);
-            }
-
-            for (let i = 0; i < numComets; i++) {
-                const comet = document.createElement('div');
-                comet.className = 'comet';
-                comet.style.top = '100%';
-                comet.style.left = `${Math.random() * 100}vw`;
-                comet.style.animationDelay = `${Math.random() * 5}s`;
-                background.appendChild(comet);
-            }
+        for (let i = 0; i < numComets; i++) {
+            const comet = document.createElement('div');
+            comet.className = 'comet';
+            comet.style.top = '100%';
+            comet.style.left = `${Math.random() * 100}vw`;
+            comet.style.animationDelay = `${Math.random() * 5}s`;
+            background.appendChild(comet);
         }
+    }
 
-        function removeStarsAndComets() {
-            const background = document.getElementById('background');
-            const stars = document.querySelectorAll('.star');
-            const comets = document.querySelectorAll('.comet');
+    function removeStarsAndComets() {
+        const background = document.getElementById('background');
+        const stars = document.querySelectorAll('.star');
+        const comets = document.querySelectorAll('.comet');
 
-            stars.forEach(star => background.removeChild(star));
-            comets.forEach(comet => background.removeChild(comet));
+        stars.forEach(star => background.removeChild(star));
+        comets.forEach(comet => background.removeChild(comet));
+    }
+
+    function addSnowstorm() {
+        const background = document.getElementById('background');
+        const numSnowflakes = 300;
+
+        for (let i = 0; i < numSnowflakes; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            const size = Math.random() * 5 + 2;
+            snowflake.style.width = `${size}px`;
+            snowflake.style.height = `${size}px`;
+            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+            snowflake.style.top = `${Math.random() * -100}vh`;
+            snowflake.style.left = `${Math.random() * 100}vw`;
+            snowflake.style.animationDuration = `${Math.random() * 3 + 3}s`;
+            background.appendChild(snowflake);
         }
+    }
 
-        function addSnowstorm() {
-            const background = document.getElementById('background');
-            const numSnowflakes = 300;
+    function removeSnowstorm() {
+        const background = document.getElementById('background');
+        const snowflakes = document.querySelectorAll('.snowflake');
 
-            for (let i = 0; i < numSnowflakes; i++) {
-                const snowflake = document.createElement('div');
-                snowflake.className = 'snowflake';
-                const size = Math.random() * 5 + 2;
-                snowflake.style.width = `${size}px`;
-                snowflake.style.height = `${size}px`;
-                snowflake.style.opacity = Math.random() * 0.5 + 0.5;
-                snowflake.style.top = `${Math.random() * -100}vh`;
-                snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.animationDuration = `${Math.random() * 3 + 3}s`;
-                background.appendChild(snowflake);
-            }
+        snowflakes.forEach(snowflake => background.removeChild(snowflake));
+    }
+
+    function addSmoke() {
+        const background = document.getElementById('background');
+        const numSmoke = 50;
+
+        for (let i = 0; i < numSmoke; i++) {
+            const smoke = document.createElement('div');
+            smoke.className = 'smoke';
+            const size = Math.random() * 20 + 10;
+            smoke.style.width = `${size}px`;
+            smoke.style.height = `${size}px`;
+            smoke.style.opacity = Math.random() * 0.3 + 0.1;
+            smoke.style.top = `${Math.random() * 100}vh`;
+            smoke.style.left = `${Math.random() * 100}vw`;
+            smoke.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            background.appendChild(smoke);
         }
-
-        function removeSnowstorm() {
-            const background = document.getElementById('background');
-            const snowflakes = document.querySelectorAll('.snowflake');
-
-            snowflakes.forEach(snowflake => background.removeChild(snowflake));
-        }
-
-        function addSmoke() {
-            const background = document.getElementById('background');
-            const numSmoke = 50;
-
-            for (let i = 0; i < numSmoke; i++) {
-                const smoke = document.createElement('div');
-                smoke.className = 'smoke';
-                const size = Math.random() * 20 + 10;
-                smoke.style.width = `${size}px`;
-                smoke.style.height = `${size}px`;
-                smoke.style.opacity = Math.random() * 0.3 + 0.1;
-                smoke.style.top = `${Math.random() * 100}vh`;
-                smoke.style.left = `${Math.random() * 100}vw`;
-                smoke.style.animationDuration = `${Math.random() * 5 + 5}s`;
-                background.appendChild(smoke);
-            }
-        }
+    }
 
         function removeSmoke() {
-            const background = document.getElementById('background');
-            const smokeParticles = document.querySelectorAll('.smoke');
+        const background = document.getElementById('background');
+        const smokeParticles = document.querySelectorAll('.smoke');
 
-            smokeParticles.forEach(smoke => background.removeChild(smoke));
-        }
+        smokeParticles.forEach(smoke => background.removeChild(smoke));
+    }
 
-        function startRandomDilemmaTimer() {
-            if (dilemmaInterval) clearInterval(dilemmaInterval);
-            dilemmaInterval = setInterval(() => {
-                const era = eras[currentEra];
-                const availableDilemmas = era.randomDilemmas.filter((_, index) => !shownDilemmas.has(index));
-                if (availableDilemmas.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * availableDilemmas.length);
-                    const dilemma = availableDilemmas[randomIndex];
-                    const originalIndex = era.randomDilemmas.indexOf(dilemma);
-                    shownDilemmas.add(originalIndex);
-                    showRandomDilemma(dilemma);
-                } else {
-                    clearInterval(dilemmaInterval);
-                }
-            }, Math.random() * 30000 + 30000); // 30 to 60 seconds
-        }
-
-        function showRandomDilemma(dilemma) {
-            dilemmaStartTime = Date.now();
-            narrative.textContent = dilemma.narrative;
-            choice1.textContent = dilemma.choices[0];
-            choice2.textContent = dilemma.choices[1];
-            choiceModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-
-            choice1.onclick = () => {
-                const timeElapsed = (Date.now() - dilemmaStartTime) / 1000;
-                if (timeElapsed < 5) unlockAchievement(5); // Quick Thinker
-                dilemma.outcomes[0]();
-                choiceModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                updateScore(false);
-                setupPassivePoints();
-            };
-            choice2.onclick = () => {
-                const timeElapsed = (Date.now() - dilemmaStartTime) / 1000;
-                if (timeElapsed < 5) unlockAchievement(5); // Quick Thinker
-                dilemma.outcomes[1]();
-                choiceModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                updateScore(false);
-                setupPassivePoints();
-            };
-        }
-
-        clickArea.addEventListener('click', (e) => {
-            points += baseClickValue + upgradeClickValue;
-            updateScore(true);
-            clickArea.classList.add('clicked');
-            setTimeout(() => clickArea.classList.remove('clicked'), 500);
-            clickSound.play();
-
-            for (let i = 0; i < 15; i++) {
-                const size = Math.random() * 10 + 5;
-                const angle = Math.random() * 2 * Math.PI;
-                const distance = Math.random() * 50;
-                const x = e.clientX + Math.cos(angle) * distance;
-                const y = e.clientY + Math.sin(angle) * distance;
-                const color = Math.random() > 0.5 ? 'var(--age-glow-color)' : '#ffffff';
-                createParticle(x, y, size, color);
-            }
-
-            const clickGlowingText = document.createElement('div');
-            clickGlowingText.className = 'click-glowing-text';
-            clickGlowingText.textContent = `+${(baseClickValue + upgradeClickValue).toFixed(1)}`;
-            clickGlowingText.style.left = `${e.clientX}px`;
-            clickGlowingText.style.top = `${e.clientY}px`;
-            mainGame.appendChild(clickGlowingText);
-            setTimeout(() => mainGame.removeChild(clickGlowingText), 800);
-        });
-
-        nextEraBtn.addEventListener('click', () => {
-            if (currentEra < eras.length - 1) {
-                if (points >= eras[currentEra].advanceCost) {
-                    showChoice();
-                } else {
-                    showAlert(`Need ${eras[currentEra].advanceCost} points to advance!`, 3000);
-                }
+    function startRandomDilemmaTimer() {
+        if (dilemmaInterval) clearInterval(dilemmaInterval);
+        dilemmaInterval = setInterval(() => {
+            const era = eras[currentEra];
+            const availableDilemmas = era.randomDilemmas.filter((_, index) => !shownDilemmas.has(index));
+            if (availableDilemmas.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableDilemmas.length);
+                const dilemma = availableDilemmas[randomIndex];
+                const originalIndex = era.randomDilemmas.indexOf(dilemma);
+                shownDilemmas.add(originalIndex);
+                showRandomDilemma(dilemma);
             } else {
-                if (medals.length === eras.length - 1) {
-                    advanceEra(); // Trigger true ending
-                } else {
-                    showAlert("You need all Medals of History to achieve the true ending!", 3000);
-                }
+                clearInterval(dilemmaInterval);
             }
-        });
+        }, Math.random() * 30000 + 30000); // 30 to 60 seconds
+    }
 
-        skipEraBtn.addEventListener('click', () => {
-            skipEra();
-        });
+    function showRandomDilemma(dilemma) {
+        dilemmaStartTime = Date.now();
+        narrative.textContent = dilemma.narrative;
+        choice1.textContent = dilemma.choices[0];
+        choice2.textContent = dilemma.choices[1];
+        choiceModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
 
-        function saveGame() {
-            const gameState = {
-                currentEra: currentEra,
-                medals: medals.map(medal => medal.getAttribute('data-tooltip')),
-                achievements: achievements.filter(ach => ach.unlocked).map(ach => ach.name)
-            };
-            localStorage.setItem('humanityClickerSave', JSON.stringify(gameState));
+        choice1.onclick = () => {
+            const timeElapsed = (Date.now() - dilemmaStartTime) / 1000;
+            if (timeElapsed < 5) unlockAchievement(5); // Quick Thinker
+            dilemma.outcomes[0]();
+            choiceModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            updateScore();
+            setupPassivePoints();
+            dilemmasResolved++;
+            if (dilemmasResolved >= 10) unlockAchievement(6); // Survivor
+        };
+        choice2.onclick = () => {
+            const timeElapsed = (Date.now() - dilemmaStartTime) / 1000;
+            if (timeElapsed < 5) unlockAchievement(5); // Quick Thinker
+            dilemma.outcomes[1]();
+            choiceModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            updateScore();
+            setupPassivePoints();
+            dilemmasResolved++;
+            if (dilemmasResolved >= 10) unlockAchievement(6); // Survivor
+        };
+    }
+
+    clickArea.addEventListener('click', (e) => {
+        points += baseClickValue + upgradeClickValue;
+        updateScore();
+        clickArea.classList.add('clicked');
+        setTimeout(() => clickArea.classList.remove('clicked'), 500);
+        clickSound.play();
+
+        for (let i = 0; i < 15; i++) {
+            const size = Math.random() * 10 + 5;
+            const angle = Math.random() * 2 * Math.PI;
+            const distance = Math.random() * 50;
+            const x = e.clientX + Math.cos(angle) * distance;
+            const y = e.clientY + Math.sin(angle) * distance;
+            const color = Math.random() > 0.5 ? 'var(--age-glow-color)' : '#ffffff';
+            createParticle(x, y, size, color);
         }
+
+        const clickGlowingText = document.createElement('div');
+        clickGlowingText.className = 'click-glowing-text';
+        clickGlowingText.textContent = `+${(baseClickValue + upgradeClickValue).toFixed(1)}`;
+        clickGlowingText.style.left = `${e.clientX}px`;
+        clickGlowingText.style.top = `${e.clientY}px`;
+        mainGame.appendChild(clickGlowingText);
+        setTimeout(() => mainGame.removeChild(clickGlowingText), 800);
+    });
+
+    nextEraBtn.addEventListener('click', () => {
+        if (currentEra < eras.length - 1) {
+            if (points >= eras[currentEra].advanceCost) {
+                showChoice();
+            } else {
+                showAlert(`Need ${eras[currentEra].advanceCost} points to advance!`, 5000);
+            }
+        } else {
+            if (medals.length === eras.length - 1) {
+                advanceEra(); // Trigger true ending
+            } else {
+                showAlert("You need all Medals of History to achieve the true ending!", 5000);
+            }
+        }
+    });
+
+    skipEraBtn.addEventListener('click', () => {
+        skipEra();
+    });
+
+    function saveGame() {
+        const gameState = {
+            currentEra: currentEra,
+            medals: medals.map(medal => medal.getAttribute('data-tooltip')),
+            achievements: achievements.filter(ach => ach.unlocked).map(ach => ach.name),
+            dilemmasResolved: dilemmasResolved
+        };
+        localStorage.setItem('humanityClickerSave', JSON.stringify(gameState));
+    }
 
         function loadGame() {
-            const savedState = localStorage.getItem('humanityClickerSave');
-            if (savedState) {
-                const gameState = JSON.parse(savedState);
-                currentEra = gameState.currentEra;
-                gameState.medals.forEach(tooltip => {
-                    const eraIndex = eras.findIndex(era => era.dilemma && era.dilemma.medalDescription === tooltip);
-                    if (eraIndex !== -1) addMedal(eraIndex);
-                });
-                gameState.achievements.forEach(achName => {
-                    const ach = achievements.find(a => a.name === achName);
-                    if (ach) ach.unlocked = true;
-                });
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') showAchievementMenu();
-        });
-
-        function showAchievementMenu() {
-            const achievementList = document.getElementById('achievementList');
-            achievementList.innerHTML = '';
-            achievements.forEach((ach, index) => {
-                const achDiv = document.createElement('div');
-                achDiv.className = 'achievement';
-                if (ach.unlocked) achDiv.classList.add('unlocked');
-                achDiv.setAttribute('data-tooltip', ach.description);
-                achievementList.appendChild(achDiv);
+        const savedState = localStorage.getItem('humanityClickerSave');
+        if (savedState) {
+            const gameState = JSON.parse(savedState);
+            currentEra = gameState.currentEra;
+            gameState.medals.forEach(tooltip => {
+                const eraIndex = eras.findIndex(era => era.dilemma && era.dilemma.medalDescription === tooltip);
+                if (eraIndex !== -1) addMedal(eraIndex);
             });
-            document.getElementById('achievementModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            gameState.achievements.forEach(achName => {
+                const ach = achievements.find(a => a.name === achName);
+                if (ach) ach.unlocked = true;
+            });
+            dilemmasResolved = gameState.dilemmasResolved || 0;
         }
+    }
 
-        document.getElementById('closeAchievementModal').addEventListener('click', () => {
-            document.getElementById('achievementModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') showAchievementMenu();
+    });
 
-        document.getElementById('resetSave').addEventListener('click', () => {
-            if (confirm('Are you sure you want to reset your save data? This action cannot be undone.')) {
-                localStorage.removeItem('humanityClickerSave');
-                location.reload();
+    function showAchievementMenu() {
+        const achievementList = document.getElementById('achievementList');
+        achievementList.innerHTML = '';
+        achievements.forEach((ach, index) => {
+            const container = document.createElement('div');
+            container.className = 'achievement-container';
+
+            const achDiv = document.createElement('div');
+            achDiv.className = 'achievement';
+            if (ach.unlocked) {
+                achDiv.classList.add('unlocked');
+                if (ach.name === "Achievement Hunter") {
+                    achDiv.classList.add('rainbow-medal');
+                }
             }
+
+            const descSpan = document.createElement('span');
+            descSpan.className = 'achievement-description';
+            descSpan.textContent = `${ach.name}: ${ach.description}`;
+
+            container.appendChild(achDiv);
+            container.appendChild(descSpan);
+            achievementList.appendChild(container);
         });
+        document.getElementById('achievementModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
 
-        setInterval(() => {
-            updateGlowingText();
-        }, 1000);
+    document.getElementById('closeAchievementModal').addEventListener('click', () => {
+        document.getElementById('achievementModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                updateScore(true);
-            }
-        });
+    document.getElementById('resetSave').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset your save data? This action cannot be undone.')) {
+            localStorage.removeItem('humanityClickerSave');
+            location.reload();
+        }
+    });
 
-        updateEra();
+    setInterval(() => {
+        updateGlowingText();
+    }, 1000);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            updateScore();
+        }
+    });
+
+    updateEra();
     </script>
 </body>
 </html>
