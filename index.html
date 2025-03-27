@@ -5,12 +5,18 @@
     <title>Realm Survivor</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Emoji:wght@400&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Chakra Petch', monospace;
+        }
+
+        /* Add Noto Emoji as a fallback or primary for emoji rendering */
+        canvas, .weaponIcon, .floatingText {
+            font-family: 'Chakra Petch', 'Noto Emoji', monospace;
         }
 
         body {
@@ -2034,7 +2040,7 @@ drawProjectiles() {
             projectile.y + projectile.radius >= this.state.camera.y &&
             projectile.y - projectile.radius <= this.state.camera.y + this.canvas.height
         ) {
-            this.ctx.save(); // Save the current context state
+            this.ctx.save(); // Save the current context state to isolate transformations
 
             // Translate to projectile position
             const screenX = projectile.x - this.state.camera.x;
@@ -2045,12 +2051,12 @@ drawProjectiles() {
                 // Rotate the context to point the knife tip in the direction of travel
                 this.ctx.rotate(projectile.rotation);
 
-                // Draw knife emoji only (no orb)
-                this.ctx.font = `${projectile.radius * 2}px Arial`; // Size based on radius
+                // Use Noto Emoji for consistent dagger rendering
+                this.ctx.font = `${projectile.radius * 2}px 'Noto Emoji'`;
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
                 this.ctx.fillStyle = projectile.color;
-                this.ctx.fillText('🗡️', 0, 0); // Draw at origin (0,0) since we translated
+                this.ctx.fillText('🗡️', 0, 0); // Draw dagger emoji at translated origin
             } else {
                 // Draw other projectiles as circles (e.g., axes)
                 this.ctx.beginPath();
@@ -2065,7 +2071,7 @@ drawProjectiles() {
                 this.ctx.fill();
             }
 
-            this.ctx.restore(); // Restore the context state
+            this.ctx.restore(); // Restore context state to prevent transformation bleed
         }
     }
 }
